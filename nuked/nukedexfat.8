@@ -1,0 +1,32 @@
+.\" Copyright (C) 2011-2018  Andrew Nayenko
+.\"
+.TH NUKEDEXFAT 8 "July 2016"
+.SH NAME
+.B nukedexfat
+\- fallout disaster recovery for a nuked exFAT file system
+.SH SYNOPSIS
+.B nukedexfat
+[
+.B \-V
+]
+.I device
+
+.SH DESCRIPTION
+.B nukedexfat
+Does its best to recover a nuked exFAT file system from whatever wasn't vaporized in the fireball.
+
+.SH OPTIONS
+Command line options available:
+.TP
+.BI \-V
+Print version and copyright.
+
+.SH EXIT CODES
+Zero is returned on success. Any other code means an error.
+
+.SH AUTHOR
+Andrew Nayenko
+Paul Ciarlo
+
+.SH SEE ALSO
+.BR mkexfatfs (8)
