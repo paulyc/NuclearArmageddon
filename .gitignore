@@ -26,3 +26,7 @@ Makefile
 /label/exfatlabel
 /libexfat/libexfat.a
 /mkfs/mkexfatfs
+
+# Apple garbage
+.DS_Store
+xcuserdata
