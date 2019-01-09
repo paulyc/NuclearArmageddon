@@ -6,7 +6,34 @@
 	objectVersion = 50;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5F6C032321DDC642009F3609 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04921D5CDEB007A8482 /* log.c */; };
+		5F6C032421DDC649009F3609 /* lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04B21D5CDEB007A8482 /* lookup.c */; };
+		5F6C032521DDC64C009F3609 /* io.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04E21D5CDEB007A8482 /* io.c */; };
+		5F6C032621DDC64E009F3609 /* mount.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04F21D5CDEB007A8482 /* mount.c */; };
+		5F6C032721DDC652009F3609 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05321D5CDEB007A8482 /* utils.c */; };
+		5F6C032821DDC654009F3609 /* time.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05421D5CDEB007A8482 /* time.c */; };
+		5F6C032921DDC656009F3609 /* cluster.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05521D5CDEB007A8482 /* cluster.c */; };
+		5F6C032A21DDC659009F3609 /* repair.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05621D5CDEB007A8482 /* repair.c */; };
+		5F6C032B21DDC65C009F3609 /* utf.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05721D5CDEB007A8482 /* utf.c */; };
+		5F6C032C21DDC65F009F3609 /* node.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05B21D5CDEB007A8482 /* node.c */; };
+		5F6C032D21DDC663009F3609 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C07F21D5CDEB007A8482 /* main.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		5F6C031921DDC638009F3609 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		5F6C031B21DDC638009F3609 /* nuked */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = nuked; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F99C03D21D5CDEB007A8482 /* dumpexfat.8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dumpexfat.8; sourceTree = "<group>"; };
 		5F99C03E21D5CDEB007A8482 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
 		5F99C03F21D5CDEB007A8482 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
@@ -64,6 +91,16 @@
 		5F99C08621D5CE40007A8482 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		5F6C031821DDC638009F3609 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
 		5F2E2EEB21D5CB1C007A8482 = {
 			isa = PBXGroup;
@@ -82,7 +119,16 @@
 				5F99C04821D5CDEB007A8482 /* libexfat */,
 				5F99C05C21D5CDEB007A8482 /* mkfs */,
 				5F99C07C21D5CDEB007A8482 /* nuked */,
+				5F6C031C21DDC638009F3609 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		5F6C031C21DDC638009F3609 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5F6C031B21DDC638009F3609 /* nuked */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		5F99C03C21D5CDEB007A8482 /* dump */ = {
@@ -200,6 +246,26 @@
 		};
 /* End PBXLegacyTarget section */
 
+/* Begin PBXNativeTarget section */
+		5F6C031A21DDC638009F3609 /* nuked */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5F6C032221DDC638009F3609 /* Build configuration list for PBXNativeTarget "nuked" */;
+			buildPhases = (
+				5F6C031721DDC638009F3609 /* Sources */,
+				5F6C031821DDC638009F3609 /* Frameworks */,
+				5F6C031921DDC638009F3609 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = nuked;
+			productName = nuked;
+			productReference = 5F6C031B21DDC638009F3609 /* nuked */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
 /* Begin PBXProject section */
 		5F2E2EEC21D5CB1C007A8482 /* Project object */ = {
 			isa = PBXProject;
@@ -208,6 +274,9 @@
 				ORGANIZATIONNAME = "Paul Ciarlo";
 				TargetAttributes = {
 					5F2E2EF021D5CB1C007A8482 = {
+						CreatedOnToolsVersion = 10.1;
+					};
+					5F6C031A21DDC638009F3609 = {
 						CreatedOnToolsVersion = 10.1;
 					};
 				};
@@ -220,13 +289,36 @@
 				en,
 			);
 			mainGroup = 5F2E2EEB21D5CB1C007A8482;
+			productRefGroup = 5F6C031C21DDC638009F3609 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				5F2E2EF021D5CB1C007A8482 /* NuclearHolocaust */,
+				5F6C031A21DDC638009F3609 /* nuked */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5F6C031721DDC638009F3609 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F6C032C21DDC65F009F3609 /* node.c in Sources */,
+				5F6C032821DDC654009F3609 /* time.c in Sources */,
+				5F6C032621DDC64E009F3609 /* mount.c in Sources */,
+				5F6C032A21DDC659009F3609 /* repair.c in Sources */,
+				5F6C032321DDC642009F3609 /* log.c in Sources */,
+				5F6C032521DDC64C009F3609 /* io.c in Sources */,
+				5F6C032921DDC656009F3609 /* cluster.c in Sources */,
+				5F6C032721DDC652009F3609 /* utils.c in Sources */,
+				5F6C032D21DDC663009F3609 /* main.c in Sources */,
+				5F6C032B21DDC65C009F3609 /* utf.c in Sources */,
+				5F6C032421DDC649009F3609 /* lookup.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
 		5F2E2EF121D5CB1C007A8482 /* Debug */ = {
@@ -361,6 +453,30 @@
 			};
 			name = Release;
 		};
+		5F6C032021DDC638009F3609 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5CXXA9F47J;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		5F6C032121DDC638009F3609 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5CXXA9F47J;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -378,6 +494,15 @@
 			buildConfigurations = (
 				5F2E2EF421D5CB1C007A8482 /* Debug */,
 				5F2E2EF521D5CB1C007A8482 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5F6C032221DDC638009F3609 /* Build configuration list for PBXNativeTarget "nuked" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5F6C032021DDC638009F3609 /* Debug */,
+				5F6C032121DDC638009F3609 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

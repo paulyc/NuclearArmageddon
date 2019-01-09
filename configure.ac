@@ -46,5 +46,6 @@ AC_CONFIG_FILES([
 	fuse/Makefile
 	label/Makefile
 	mkfs/Makefile
+	nuked/Makefile
 	Makefile])
 AC_OUTPUT

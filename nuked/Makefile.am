@@ -23,6 +23,6 @@
 
 sbin_PROGRAMS = nukedexfat
 dist_man8_MANS = nukedexfat.8
-dumpexfat_SOURCES = main.c
-dumpexfat_CPPFLAGS = -I$(top_srcdir)/libexfat
-dumpexfat_LDADD = ../libexfat/libexfat.a
+nukedexfat_SOURCES = main.c
+nukedexfat_CPPFLAGS = -I$(top_srcdir)/libexfat
+nukedexfat_LDADD = ../libexfat/libexfat.a
