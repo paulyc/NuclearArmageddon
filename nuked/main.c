@@ -110,6 +110,17 @@ void dump_extfat_entry(union exfat_entries_t *ent, size_t cluster_ofs) {
             fprintf(stderr, "size: %llu\n", ent->meta2.size.__u64);
             fprintf(stderr, "valid_size: %llu\n", ent->meta2.valid_size.__u64);
             fprintf(stderr, "start_cluster: %08x\n", ent->meta2.start_cluster.__u32);
+            fprintf(stderr, "flags: %08x\n", ent->meta2.flags);
+            if ((1 << 1) & ent->meta2.flags) {
+                fprintf(stderr, "(Contiguous file)\n");
+            } else {
+                /*if (1 & ent->meta2.flags) {
+
+                } else {
+
+                }*/
+                fprintf(stderr, "(Fragmented file)\n");
+            }
             break;
         }
         case EXFAT_ENTRY_FILE_NAME:
@@ -244,19 +255,21 @@ void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_
 int log_dir_entries(struct exfat_dev *dev) {
     uint8_t cluster_buf[likely_cluster_size_bytes];
 
-    size_t cluster_ofs = 0x00000009b6ffb000;
+    size_t cluster_ofs = 0x00000026f6ffb000;
     exfat_seek(dev, cluster_ofs, SEEK_SET);
-    for (cluster_t c = 0x00045000; ; ++c) {
+    for (cluster_t c = 0x0012f000; ; ++c) {
         ssize_t rd = exfat_read(dev, cluster_buf, sizeof(cluster_buf));
         if (rd == 0) { // eof
             return 0;
         } else if (rd == -1) {
             return errno;
         } else {
+            cluster_search_file_directory_entries(cluster_buf, rd, cluster_ofs);
             if ((c | 0xFFFFF000) == 0xFFFFF000) {
                 printf("CLUSTER %08x OFFSET %016zx\n", c, cluster_ofs);
+                fflush(stdout);
             }
-            cluster_search_file_directory_entries(cluster_buf, rd, cluster_ofs);
+            cluster_ofs += rd;
             //if ((c | 0xFFFFFF00) == 0xFFFFFF00) {
             //    printf("CLUSTER 0x%08x OFFSET 0x%016zx\n", c, cluster_ofs);
             //}
@@ -265,7 +278,6 @@ int log_dir_entries(struct exfat_dev *dev) {
             //    printf("cluster_ofs = 0x%016zx\n", cluster_ofs);
             //}
         }
-        cluster_ofs += rd;
     }
 }
 
