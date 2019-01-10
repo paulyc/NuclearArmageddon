@@ -68,6 +68,68 @@ struct exfat_super_block
 PACKED;
 STATIC_ASSERT(sizeof(struct exfat_super_block) == 512);
 
+// Main Extended Boot Region - 8 sectors, generally not used
+struct mebr_sector_t {
+    uint8_t zero[510];
+    le16_t boot_signature;
+}
+PACKED;
+STATIC_ASSERT(sizeof(struct mebr_sector_t) == 512);
+
+// The Main Extended Boot Region takes up the next 8 sectors, even when not used.
+//static struct mebr_sector_t zero_mebs = { { 0 }, 0xAA55 };
+
+//The next sector in the VBR (sector 9) is the OEM parameters record.
+// Since this record really doesn’t exist yet (it is all zeros in the file systems that were
+// generated), there is little analysis that can be done at this time. The patent specifies this
+// table as 10 fields of 48 bytes, the first 16 bytes of each field is the GUID and the remaining
+// 32 bytes are the parameters, but no additional definition is provided.
+// The entries are not sorted, and it is possible that the first 9 are empty and the last has data,
+// so the specification states that all 10 entries should be searched. This sector is filled out by
+// the media manufacturer at the factory and a format operation is not supposed to erase this sector
+// with the exception of a secure wipe of the media.
+struct oem_parameters_t
+{
+    le32_t OemParameterType[4]; //GUID. Value is OEM_FLASH_PARAMETER_GUID
+    le32_t EraseBlockSize; //Erase block size in bytes
+    le32_t PageSize;
+    le32_t NumberOfSpareBlocks;
+    le32_t tRandomAccess; //Random Access Time in nanoseconds
+    le32_t tProgram; //Program time in nanoseconds
+    le32_t tReadCycle; // Serial read cycle time in nanoseconds
+    le32_t tWriteCycle; // Write Cycle time in nanoseconds
+    le32_t Reserved;
+    uint8_t Padding[464];
+}
+PACKED;
+STATIC_ASSERT(sizeof(struct oem_parameters_t) == 512);
+
+//static struct oem_parameters_t zero_params = { {0}, 0, 0, 0, 0, 0, 0, 0, 0, {0} };
+
+struct zero_sector_t {
+    uint8_t zero[512];
+}
+PACKED;
+STATIC_ASSERT(sizeof(struct zero_sector_t) == 512);
+
+//static struct zero_sector_t zero_sector = {0};
+
+struct chksum_sector_t {
+    le32_t chksum[128];
+}
+PACKED;
+STATIC_ASSERT(sizeof(struct chksum_sector_t) == 512);
+
+struct exfat_vbr_t {
+    struct exfat_super_block sb;
+    struct mebr_sector_t mebs[8];
+    struct oem_parameters_t oem_params;
+    struct zero_sector_t zs[2];
+    struct chksum_sector_t chksum;
+}
+PACKED;
+STATIC_ASSERT(sizeof(struct exfat_vbr_t) == 13*512);
+
 #define EXFAT_ENTRY_VALID     0x80
 #define EXFAT_ENTRY_CONTINUED 0x40
 #define EXFAT_ENTRY_OPTIONAL  0x20
