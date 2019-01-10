@@ -177,4 +177,16 @@ struct exfat_entry_name				/* file or directory name */
 PACKED;
 STATIC_ASSERT(sizeof(struct exfat_entry_name) == 32);
 
+union exfat_entries_t {
+    struct exfat_entry ent;
+    struct exfat_entry_bitmap bitmap;
+    struct exfat_entry_upcase upcase;
+    struct exfat_entry_label label;
+    struct exfat_entry_meta1 meta1;
+    struct exfat_entry_meta2 meta2;
+    struct exfat_entry_name name;
+}
+PACKED;
+STATIC_ASSERT(sizeof(union exfat_entries_t) == 32);
+
 #endif /* ifndef EXFATFS_H_INCLUDED */

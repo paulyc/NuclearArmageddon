@@ -1,0 +1,33 @@
+.\" Copyright (C) 2011-2018  Andrew Nayenko
+.\" Copyright (C) 2018-2019  Paul Ciarlo
+.\"
+.TH DENUKIFY 8 "January 2019"
+.SH NAME
+.B denukify
+\- restore files from the log of scanning a nuked exFAT file system
+.SH SYNOPSIS
+.B denukify
+[
+.B \-V
+]
+.I log
+
+.SH DESCRIPTION
+.B denukify
+Does its best to restore files from a nuked exFAT file system from the nukedexfat log.
+
+.SH OPTIONS
+Command line options available:
+.TP
+.BI \-V
+Print version and copyright.
+
+.SH EXIT CODES
+Zero is returned on success. Any other code means an error.
+
+.SH AUTHOR
+Andrew Nayenko
+Paul Ciarlo
+
+.SH SEE ALSO
+.BR nukedexfat (8)

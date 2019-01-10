@@ -26,6 +26,8 @@ Makefile
 /label/exfatlabel
 /libexfat/libexfat.a
 /mkfs/mkexfatfs
+/nuked/nukedexfat
+/denukify/denukify
 
 # Apple garbage
 .DS_Store

@@ -4,7 +4,7 @@
 
 	Free exFAT implementation.
 	Copyright (C) 2011-2018  Andrew Nayenko
-	Copyright (C) 2018       Paul Ciarlo
+	Copyright (C) 2018-2019  Paul Ciarlo
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -30,13 +30,6 @@
 #include <fcntl.h>
 #include <errno.h>
 
-static void usage(const char* prog)
-{
-	fprintf(stderr, "Usage: %s <device>\n", prog);
-	fprintf(stderr, "       %s -V\n", prog);
-	exit(1);
-}
-
 static const size_t likely_sector_size_bytes = 512; // bytes 0x0200
 static const size_t likely_sectors_per_cluster = 256; // 0x0100
 static const size_t likely_cluster_size_bytes =
@@ -48,16 +41,6 @@ static const size_t start_offset_cluster = start_offset_bytes / likely_cluster_s
 
 //static struct exfat_dev *dev;
 //static struct exfat_super_block restored_sb;
-
-union exfat_entries_t {
-    struct exfat_entry ent;
-    struct exfat_entry_bitmap bitmap;
-    struct exfat_entry_upcase upcase;
-    struct exfat_entry_label label;
-    struct exfat_entry_meta1 meta1;
-    struct exfat_entry_meta2 meta2;
-    struct exfat_entry_name name;
-};
 
 void dump_extfat_entry(union exfat_entries_t *ent, size_t cluster_ofs) {
     switch (ent->ent.type) {
@@ -255,9 +238,9 @@ void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_
 int log_dir_entries(struct exfat_dev *dev) {
     uint8_t cluster_buf[likely_cluster_size_bytes];
 
-    size_t cluster_ofs = 0x00000026f6ffb000;
+    size_t cluster_ofs = 0x00000031b6ffb000;
     exfat_seek(dev, cluster_ofs, SEEK_SET);
-    for (cluster_t c = 0x0012f000; ; ++c) {
+    for (cluster_t c = 0x00185000; ; ++c) {
         ssize_t rd = exfat_read(dev, cluster_buf, sizeof(cluster_buf));
         if (rd == 0) { // eof
             return 0;
@@ -293,6 +276,13 @@ int reconstruct(struct exfat_dev *dev) {
 // but anything fragmented will be difficult to put back together
 // Im thinking
 
+static void usage(const char* prog)
+{
+    fprintf(stderr, "Usage: %s <device>\n", prog);
+    fprintf(stderr, "       %s -V\n", prog);
+    exit(1);
+}
+
 int main(int argc, char* argv[])
 {
 	int opt, ret;
@@ -308,7 +298,7 @@ int main(int argc, char* argv[])
 		{
 			case 'V':
 				fprintf(stderr, "Copyright (C) 2011-2018  Andrew Nayenko\n");
-				fprintf(stderr, "Copyright (C) 2018       Paul Ciarlo\n");
+				fprintf(stderr, "Copyright (C) 2018-2019  Paul Ciarlo\n");
 				return 0;
 			default:
 				usage(argv[0]);
@@ -328,10 +318,11 @@ int main(int argc, char* argv[])
             return ret;
         }
         //ret = dump
+        exfat_close(dev);
     } else {
         ret = errno;
         fprintf(stderr, "open_ro() returned error: %s\n", strerror(ret));
     }
 
-	return 0;
+    return 0;
 }

@@ -4,7 +4,7 @@
 #
 #    Free exFAT implementation.
 #    Copyright (C) 2011-2018  Andrew Nayenko
-#    Copyright (C) 2018-2019  Paul Ciarlo
+#    Copyright (C) 2018-2019 Paul Ciarlo
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-sbin_PROGRAMS = nukedexfat
-dist_man8_MANS = nukedexfat.8
-nukedexfat_SOURCES = main.c
-nukedexfat_CPPFLAGS = -I$(top_srcdir)/libexfat
-nukedexfat_LDADD = ../libexfat/libexfat.a
+sbin_PROGRAMS = denukify
+dist_man8_MANS = denukify.8
+denukify_SOURCES = main.c
+denukify_CPPFLAGS = -I$(top_srcdir)/libexfat
+denukify_LDADD = ../libexfat/libexfat.a

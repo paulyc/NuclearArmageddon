@@ -4,6 +4,7 @@
 #
 #	Free exFAT implementation.
 #	Copyright (C) 2010-2018  Andrew Nayenko
+#	Copyright (C) 2018-2019  Paul Ciarlo
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -20,4 +21,4 @@
 #	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
-SUBDIRS = libexfat dump fsck fuse label mkfs nuked
+SUBDIRS = libexfat dump fsck fuse label mkfs nuked denukify
