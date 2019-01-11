@@ -93,6 +93,9 @@ struct exfat_vbr_t vbr = {
     .chksum = { 0 },
 };
 
+// (cluster count + 1) * 4  - byte offset of last fat entry
+//le32_t fat[
+
 // Sector 10 is reserved, and is not currently defined.
 // Sector 11 is a checksum sector, where every 4 byte integer is a 32 bit repeating checksum value
 // of the previous 11 sectors. If anyone wanted to tamper with the VBR by changing values in the BPB
@@ -100,6 +103,8 @@ struct exfat_vbr_t vbr = {
 // recalculated and sector 11 would need to be updated.
 // The last 3 sectors of this 12 sector VBR (sectors 9, 10 and 11) do not contain signatures,
 // the signatures are only used for sectors containing boot code and are in the first 9 sectors.
+
+
 
 void update_chksum_sector(le32_t *chksum, const uint8_t *const buf, size_t len)
 {
@@ -139,7 +144,7 @@ int main(int argc, char* argv[])
     int opt, ret;
     const char* options;
     const char* spec = NULL;
-    struct exfat_dev *dev;
+    struct exfat_dev *dev = NULL;
     FILE *logfile;
 
     fprintf(stderr, "%s %s\n", argv[0], VERSION);

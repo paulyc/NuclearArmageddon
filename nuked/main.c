@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <stdatomic.h>
 
 static const size_t likely_sector_size_bytes = 512; // bytes 0x0200
 static const size_t likely_sectors_per_cluster = 256; // 0x0100
@@ -125,6 +126,99 @@ void dump_extfat_entry(union exfat_entries_t *ent, size_t cluster_ofs) {
     }
 }
 
+static const int bufferSize = (1 << 26) - 1;
+uint8_t buffer[bufferSize];
+static const uint8_t *buffer_end = buffer + bufferSize;
+static const int read_size = 0x2000;
+static const ssize_t start_disk_offset = read_size * 10;
+volatile ssize_t rd_offset = start_disk_offset;
+volatile ssize_t wr_offset = start_disk_offset;
+volatile bool run = true;
+struct exfat_dev *dev = NULL;
+
+void write_thread() {
+    __asm("lfence");
+    while (run) {
+        size_t filled = (wr_offset - rd_offset) & bufferSize;
+        int available = bufferSize - filled;
+        if (available > 0x2000) {
+			ssize_t rd = exfat_read(dev, buffer + (wr_offset & bufferSize), 0x2000);
+            if (rd == -1) {
+                // err
+            } else if (rd == 0) {
+                run = false;
+            } else {
+                wr_offset += rd;
+            }
+            __asm("mfence");
+        } else {
+            __asm("pause");
+            __asm("lfence");
+        }
+    }
+}
+
+void read_thread() {
+    __asm("lfence");
+    while (run) {
+		size_t filled = (wr_offset - rd_offset) & bufferSize;
+        while (filled >= 2*sizeof(struct exfat_entry) + 1) {
+        	if (buffer[rd_offset & bufferSize] == EXFAT_ENTRY_FILE &&
+                buffer[(rd_offset + sizeof(struct exfat_entry)) & bufferSize] == EXFAT_ENTRY_FILE_INFO &&
+                buffer[(rd_offset + 2*sizeof(struct exfat_entry)) & bufferSize] == EXFAT_ENTRY_FILE_NAME) {
+				struct exfat_entry_meta1 *file_directory_entry = (struct exfat_entry_meta1 *)buffer + (rd_offset & bufferSize);
+                ssize_t fde_offset = rd_offset;
+                uint16_t fde_chksum = file_directory_entry->checksum.__u16;
+                uint8_t continuations = file_directory_entry->continuations;
+                //char fname[1024];
+                if (continuations >= 2 && continuations <= 18) { // does not include this entry itself. range 2-18
+                    uint16_t chksum = 0;
+                    for (int i = 0; i < sizeof(struct exfat_entry); i++) {
+                        if (i != 2 && i != 3) { /* skip checksum field itself */
+                            chksum = ((chksum << 15) | (chksum >> 1)) + buffer[rd_offset++ & bufferSize];
+                        }
+                    }
+
+                    //struct exfat_entry_meta2 *file_info_entry = (struct exfat_entry_meta2 *)buffer[rd_offset & bufferSize];
+
+                    __asm("mfence");
+
+                    while (continuations-- > 0) {
+                        filled = (wr_offset - rd_offset) & bufferSize;
+                        if (filled > sizeof(struct exfat_entry)) {
+                            //uint8_t type = buffer[rd_offset & bufferSize];
+                            for (int i = 0; i < sizeof(struct exfat_entry); i++) {
+                                chksum = ((chksum << 15) | (chksum >> 1)) + buffer[rd_offset++ & bufferSize];
+                            }
+                            __asm("mfence");
+                        } else {
+                            __asm("pause");
+                            __asm("lfence");
+                        }
+                    }
+
+                    if (chksum == fde_chksum) {
+                        printf("FDE %016zx\n", fde_offset);
+                    } else {
+						fprintf(stderr, "bad checksum %04x vs. %04x\n", chksum, fde_chksum);
+                    }
+                } else {
+                    //fprintf(stderr, "bad continuations\n");
+                }
+            } else {
+                ++rd_offset;
+                --filled;
+                __asm("sfence");
+            }
+        }
+
+        if (filled < 2*sizeof(struct exfat_entry) + 1) {
+            __asm("pause");
+        }
+        __asm("lfence");
+    }
+}
+
 void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_size, size_t cluster_ofs_begin) {
     //fprintf(stderr, "cluster_search_file_directory_entries 0x%016zx, 0x%08zx\n", cluster_ofs_begin, cluster_size);
     uint8_t *cluster_ptr = cluster_buf, *cluster_end = cluster_buf + cluster_size;
@@ -139,6 +233,7 @@ void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_
         if ((cluster_ofs | 0xFFFFFFFFF0000000) == 0xFFFFFFFFF0000000) {
             fprintf(stderr, "cluster_ofs = %016zx\n", cluster_ofs);
         }
+
         if (file_directory_entry == NULL) {
             if (*cluster_ptr == EXFAT_ENTRY_FILE &&
                 *(cluster_ptr + sizeof(struct exfat_entry)) == EXFAT_ENTRY_FILE_INFO &&
@@ -238,9 +333,9 @@ void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_
 int log_dir_entries(struct exfat_dev *dev) {
     uint8_t cluster_buf[likely_cluster_size_bytes];
 
-    size_t cluster_ofs = 0x00000031b6ffb000;
+    size_t cluster_ofs = 0x0000004596ffb000;
     exfat_seek(dev, cluster_ofs, SEEK_SET);
-    for (cluster_t c = 0x00185000; ; ++c) {
+    for (cluster_t c = 0x00224000; ; ++c) {
         ssize_t rd = exfat_read(dev, cluster_buf, sizeof(cluster_buf));
         if (rd == 0) { // eof
             return 0;
