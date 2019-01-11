@@ -128,70 +128,59 @@ void dump_extfat_entry(union exfat_entries_t *ent, size_t cluster_ofs) {
     }
 }
 
-static const size_t bufferSize = (1 << 26) - 1;
+static const ssize_t bufferSize = (1 << 26) - 1;
 uint8_t buffer[bufferSize];
 static const uint8_t *buffer_end = buffer + bufferSize;
 static const int read_size = 0x2000;
-static const size_t start_disk_offset = 0;
-volatile size_t rd_offset = start_disk_offset;
-volatile size_t wr_offset = start_disk_offset;
+static const ssize_t start_disk_offset = 0;
+volatile ssize_t rd_offset = start_disk_offset;
+volatile ssize_t wr_offset = start_disk_offset;
 volatile bool run = true;
 struct exfat_dev *dev = NULL;
 
-void sig_handler(int sig) {
+void sig_handler(int signum) {
     run = false;
-    __asm("lfence");
+    fprintf(stderr, "interrupt, quitting\n");
+    __asm("mfence");
 }
 
 void* write_thread(void *param) {
     ssize_t rd;
     exfat_seek(dev, start_disk_offset, SEEK_SET);
-    __asm("sfence");
+	__asm("mfence");
     while (run) {
-        const size_t filled = (wr_offset - rd_offset) & bufferSize;
-        const int available = bufferSize - filled;
+        const ssize_t filled = (wr_offset - rd_offset) & bufferSize;
+        const ssize_t available = bufferSize - filled;
         if (available >= 0x2000) {
-            uint8_t *rd_begin = buffer + (wr_offset & bufferSize);
-            size_t buffer_left = buffer_end - rd_begin;
-            size_t to_rd = buffer_left >= 0x2000 ? 0x2000 : buffer_left;//min(0x2000, buffer_end - rd_begin);
-            /*
-            if (rd_begin + 0x2000 >= buffer_end) {
-                rd = exfat_read(dev, rd_begin, to_rd);
-                if (rd == -1) {
-                    run = false;
-                } else if (rd == 0) {
-                    run = false;
-                } else {
-                    wr_offset += rd;
+            const ssize_t rd_ofs = (wr_offset & bufferSize);
+
+            rd = exfat_read(dev, buffer + rd_ofs, 0x2000);
+            if (rd == -1) {
+                fprintf(stderr, "exfat_read error: %s\n", strerror(errno));
+                run = false;
+            } else if (rd == 0) {
+                fprintf(stderr, "eof\n");
+                run = false;
+            } else {
+                wr_offset += rd;
+                if ((wr_offset | 0xFFFFFFFF00000000) == 0xFFFFFFFF00000000) {
+                    printf("OFFSET %016zx\n", wr_offset);
+                    fflush(stdout);
                 }
-            } else {*/
-				rd = exfat_read(dev, rd_begin, to_rd);
-                if (rd == -1) {
-                    run = false;
-                } else if (rd == 0) {
-                    run = false;
-                } else {
-                    wr_offset += rd;
-                }
-            __asm("mfence");
+            }
         } else {
             __asm("pause");
-            __asm("sfence");
         }
+        __asm("mfence");
     }
-    __asm("mfence");
     return NULL;
 }
 
 void* read_thread(void *param) {
-    __asm("sfence");
+    __asm("mfence");
     while (run) {
-        /*if ((rd_offset | 0xFFFFFFFFFFFFF000) == 0xFFFFFFFFFFFFF000) {
-            printf("OFFSET %016zx\n", rd_offset);
-            fflush(stdout);
-        }*/
-		size_t filled = (wr_offset - rd_offset) & bufferSize;
-        while (filled >= 2*sizeof(struct exfat_entry) + 1) {
+		ssize_t filled = (wr_offset - rd_offset) & bufferSize;
+        while (filled >= 3*sizeof(struct exfat_entry)) {
         	if (buffer[rd_offset & bufferSize] == EXFAT_ENTRY_FILE &&
                 buffer[(rd_offset + sizeof(struct exfat_entry)) & bufferSize] == EXFAT_ENTRY_FILE_INFO &&
                 buffer[(rd_offset + 2*sizeof(struct exfat_entry)) & bufferSize] == EXFAT_ENTRY_FILE_NAME) {
@@ -216,26 +205,27 @@ void* read_thread(void *param) {
 
                     while (run && continuations > 0) {
                         filled = (wr_offset - rd_offset) & bufferSize;
-                        if (filled > sizeof(struct exfat_entry)) {
+                        if (filled >= sizeof(struct exfat_entry)) {
                             //uint8_t type = buffer[rd_offset & bufferSize];
                             for (int i = 0; i < sizeof(struct exfat_entry); i++) {
                                 chksum = ((chksum << 15) | (chksum >> 1)) + buffer[rd_offset++ & bufferSize];
                             }
                             --continuations;
-                            __asm("mfence");
                         } else {
                             __asm("pause");
-                            __asm("sfence");
                         }
+                        __asm("mfence");
                     }
 
                     if (chksum == fde_chksum) {
                         printf("FDE %016zx\n", fde_offset);
                     } else {
 						fprintf(stderr, "bad checksum %04x vs. %04x\n", chksum, fde_chksum);
+                        rd_offset = fde_offset + 1;
                     }
                 } else {
                     //fprintf(stderr, "bad continuations\n");
+                    ++rd_offset;
                 }
             } else {
                 ++rd_offset;
@@ -244,10 +234,10 @@ void* read_thread(void *param) {
             }
         }
 
-        if (filled < 2*sizeof(struct exfat_entry) + 1) {
+        if (filled < 3*sizeof(struct exfat_entry)) {
             __asm("pause");
         }
-        __asm("sfence");
+        __asm("mfence");
     }
     return NULL;
 }
