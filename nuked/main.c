@@ -30,6 +30,8 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <stdatomic.h>
+#include <pthread.h>
+#include <signal.h>
 
 static const size_t likely_sector_size_bytes = 512; // bytes 0x0200
 static const size_t likely_sectors_per_cluster = 256; // 0x0100
@@ -126,50 +128,79 @@ void dump_extfat_entry(union exfat_entries_t *ent, size_t cluster_ofs) {
     }
 }
 
-static const int bufferSize = (1 << 26) - 1;
+static const size_t bufferSize = (1 << 26) - 1;
 uint8_t buffer[bufferSize];
 static const uint8_t *buffer_end = buffer + bufferSize;
 static const int read_size = 0x2000;
-static const ssize_t start_disk_offset = read_size * 10;
-volatile ssize_t rd_offset = start_disk_offset;
-volatile ssize_t wr_offset = start_disk_offset;
+static const size_t start_disk_offset = 0;
+volatile size_t rd_offset = start_disk_offset;
+volatile size_t wr_offset = start_disk_offset;
 volatile bool run = true;
 struct exfat_dev *dev = NULL;
 
-void write_thread() {
+void sig_handler(int sig) {
+    run = false;
     __asm("lfence");
+}
+
+void* write_thread(void *param) {
+    ssize_t rd;
+    exfat_seek(dev, start_disk_offset, SEEK_SET);
+    __asm("sfence");
     while (run) {
-        size_t filled = (wr_offset - rd_offset) & bufferSize;
-        int available = bufferSize - filled;
-        if (available > 0x2000) {
-			ssize_t rd = exfat_read(dev, buffer + (wr_offset & bufferSize), 0x2000);
-            if (rd == -1) {
-                // err
-            } else if (rd == 0) {
-                run = false;
-            } else {
-                wr_offset += rd;
-            }
+        const size_t filled = (wr_offset - rd_offset) & bufferSize;
+        const int available = bufferSize - filled;
+        if (available >= 0x2000) {
+            uint8_t *rd_begin = buffer + (wr_offset & bufferSize);
+            size_t buffer_left = buffer_end - rd_begin;
+            size_t to_rd = buffer_left >= 0x2000 ? 0x2000 : buffer_left;//min(0x2000, buffer_end - rd_begin);
+            /*
+            if (rd_begin + 0x2000 >= buffer_end) {
+                rd = exfat_read(dev, rd_begin, to_rd);
+                if (rd == -1) {
+                    run = false;
+                } else if (rd == 0) {
+                    run = false;
+                } else {
+                    wr_offset += rd;
+                }
+            } else {*/
+				rd = exfat_read(dev, rd_begin, to_rd);
+                if (rd == -1) {
+                    run = false;
+                } else if (rd == 0) {
+                    run = false;
+                } else {
+                    wr_offset += rd;
+                }
             __asm("mfence");
         } else {
             __asm("pause");
-            __asm("lfence");
+            __asm("sfence");
         }
     }
+    __asm("mfence");
+    return NULL;
 }
 
-void read_thread() {
-    __asm("lfence");
+void* read_thread(void *param) {
+    __asm("sfence");
     while (run) {
+        /*if ((rd_offset | 0xFFFFFFFFFFFFF000) == 0xFFFFFFFFFFFFF000) {
+            printf("OFFSET %016zx\n", rd_offset);
+            fflush(stdout);
+        }*/
 		size_t filled = (wr_offset - rd_offset) & bufferSize;
         while (filled >= 2*sizeof(struct exfat_entry) + 1) {
         	if (buffer[rd_offset & bufferSize] == EXFAT_ENTRY_FILE &&
                 buffer[(rd_offset + sizeof(struct exfat_entry)) & bufferSize] == EXFAT_ENTRY_FILE_INFO &&
                 buffer[(rd_offset + 2*sizeof(struct exfat_entry)) & bufferSize] == EXFAT_ENTRY_FILE_NAME) {
-				struct exfat_entry_meta1 *file_directory_entry = (struct exfat_entry_meta1 *)buffer + (rd_offset & bufferSize);
+				//struct exfat_entry_meta1 *file_directory_entry = (struct exfat_entry_meta1 *)buffer + (rd_offset & bufferSize);
                 ssize_t fde_offset = rd_offset;
-                uint16_t fde_chksum = file_directory_entry->checksum.__u16;
-                uint8_t continuations = file_directory_entry->continuations;
+                uint16_t fde_chksum = buffer[(rd_offset+3) & bufferSize];
+                fde_chksum <<= 8;
+                fde_chksum |= buffer[(rd_offset+2) & bufferSize]; //file_directory_entry->checksum.__u16;
+                uint8_t continuations = buffer[(rd_offset+1) & bufferSize];// file_directory_entry->continuations;
                 //char fname[1024];
                 if (continuations >= 2 && continuations <= 18) { // does not include this entry itself. range 2-18
                     uint16_t chksum = 0;
@@ -183,17 +214,18 @@ void read_thread() {
 
                     __asm("mfence");
 
-                    while (continuations-- > 0) {
+                    while (run && continuations > 0) {
                         filled = (wr_offset - rd_offset) & bufferSize;
                         if (filled > sizeof(struct exfat_entry)) {
                             //uint8_t type = buffer[rd_offset & bufferSize];
                             for (int i = 0; i < sizeof(struct exfat_entry); i++) {
                                 chksum = ((chksum << 15) | (chksum >> 1)) + buffer[rd_offset++ & bufferSize];
                             }
+                            --continuations;
                             __asm("mfence");
                         } else {
                             __asm("pause");
-                            __asm("lfence");
+                            __asm("sfence");
                         }
                     }
 
@@ -208,15 +240,16 @@ void read_thread() {
             } else {
                 ++rd_offset;
                 --filled;
-                __asm("sfence");
+                __asm("mfence");
             }
         }
 
         if (filled < 2*sizeof(struct exfat_entry) + 1) {
             __asm("pause");
         }
-        __asm("lfence");
+        __asm("sfence");
     }
+    return NULL;
 }
 
 void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_size, size_t cluster_ofs_begin) {
@@ -383,7 +416,8 @@ int main(int argc, char* argv[])
 	int opt, ret;
 	const char* options;
 	const char* spec = NULL;
-    struct exfat_dev *dev;
+    //struct exfat_dev *dev;
+    pthread_t rd_th, wr_th;
 
 	fprintf(stderr, "%s %s\n", argv[0], VERSION);
 
@@ -407,12 +441,17 @@ int main(int argc, char* argv[])
 	fprintf(stderr, "Reconstructing nuked file system on %s.\n", spec);
     dev = exfat_open(spec, EXFAT_MODE_RO);
     if (dev != NULL) {
-        ret = reconstruct(dev);
-        if (ret != 0) {
+        //ret = reconstruct(dev);
+        signal(SIGINT, sig_handler);
+        pthread_create(&wr_th, NULL, write_thread, NULL);
+        pthread_create(&rd_th, NULL, read_thread, NULL);
+        /*if (ret != 0) {
 			fprintf(stderr, "reconstruct() returned error: %s\n", strerror(ret));
             return ret;
-        }
+        }*/
         //ret = dump
+        pthread_join(rd_th, NULL);
+        pthread_join(wr_th, NULL);
         exfat_close(dev);
     } else {
         ret = errno;
