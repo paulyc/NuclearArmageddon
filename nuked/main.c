@@ -132,7 +132,7 @@ static const ssize_t bufferSize = (1 << 26) - 1;
 uint8_t buffer[bufferSize];
 static const uint8_t *buffer_end = buffer + bufferSize;
 static const int read_size = 0x2000;
-static const ssize_t start_disk_offset = 0;
+static const ssize_t start_disk_offset = 0x0000000600000000;
 volatile ssize_t rd_offset = start_disk_offset;
 volatile ssize_t wr_offset = start_disk_offset;
 volatile bool run = true;
@@ -163,7 +163,7 @@ void* write_thread(void *param) {
                 run = false;
             } else {
                 wr_offset += rd;
-                if ((wr_offset | 0xFFFFFFFF00000000) == 0xFFFFFFFF00000000) {
+                if ((wr_offset & 0x7FFFFFFF) == 0) {
                     printf("OFFSET %016zx\n", wr_offset);
                     fflush(stdout);
                 }
