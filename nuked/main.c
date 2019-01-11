@@ -132,7 +132,7 @@ static const ssize_t bufferSize = (1 << 26) - 1;
 uint8_t buffer[bufferSize];
 static const uint8_t *buffer_end = buffer + bufferSize;
 static const int read_size = 0x2000;
-static const ssize_t start_disk_offset = 0x0000000600000000;
+static const ssize_t start_disk_offset = 0x0000000000000000;
 volatile ssize_t rd_offset = start_disk_offset;
 volatile ssize_t wr_offset = start_disk_offset;
 volatile bool run = true;
@@ -147,7 +147,6 @@ void sig_handler(int signum) {
 void* write_thread(void *param) {
     ssize_t rd;
     exfat_seek(dev, start_disk_offset, SEEK_SET);
-	__asm("mfence");
     while (run) {
         const ssize_t filled = (wr_offset - rd_offset) & bufferSize;
         const ssize_t available = bufferSize - filled;
@@ -163,7 +162,7 @@ void* write_thread(void *param) {
                 run = false;
             } else {
                 wr_offset += rd;
-                if ((wr_offset & 0x7FFFFFFF) == 0) {
+                if ((wr_offset & 0xFFFFFFF) == 0) {
                     printf("OFFSET %016zx\n", wr_offset);
                     fflush(stdout);
                 }
@@ -177,51 +176,50 @@ void* write_thread(void *param) {
 }
 
 void* read_thread(void *param) {
-    __asm("mfence");
     while (run) {
 		ssize_t filled = (wr_offset - rd_offset) & bufferSize;
-        while (filled >= 3*sizeof(struct exfat_entry)) {
+        if (filled >= 3*sizeof(struct exfat_entry)) {
         	if (buffer[rd_offset & bufferSize] == EXFAT_ENTRY_FILE &&
                 buffer[(rd_offset + sizeof(struct exfat_entry)) & bufferSize] == EXFAT_ENTRY_FILE_INFO &&
                 buffer[(rd_offset + 2*sizeof(struct exfat_entry)) & bufferSize] == EXFAT_ENTRY_FILE_NAME) {
 				//struct exfat_entry_meta1 *file_directory_entry = (struct exfat_entry_meta1 *)buffer + (rd_offset & bufferSize);
                 ssize_t fde_offset = rd_offset;
-                uint16_t fde_chksum = buffer[(rd_offset+3) & bufferSize];
-                fde_chksum <<= 8;
-                fde_chksum |= buffer[(rd_offset+2) & bufferSize]; //file_directory_entry->checksum.__u16;
+                uint16_t fde_chksum = *((uint16_t*)(buffer + ((rd_offset+2) & bufferSize)));
                 uint8_t continuations = buffer[(rd_offset+1) & bufferSize];// file_directory_entry->continuations;
                 //char fname[1024];
                 if (continuations >= 2 && continuations <= 18) { // does not include this entry itself. range 2-18
                     uint16_t chksum = 0;
                     for (int i = 0; i < sizeof(struct exfat_entry); i++) {
                         if (i != 2 && i != 3) { /* skip checksum field itself */
-                            chksum = ((chksum << 15) | (chksum >> 1)) + buffer[rd_offset++ & bufferSize];
+                            chksum = ((chksum << 15) | (chksum >> 1)) + buffer[fde_offset++ & bufferSize];
                         }
                     }
 
                     //struct exfat_entry_meta2 *file_info_entry = (struct exfat_entry_meta2 *)buffer[rd_offset & bufferSize];
 
-                    __asm("mfence");
-
-                    while (run && continuations > 0) {
-                        filled = (wr_offset - rd_offset) & bufferSize;
-                        if (filled >= sizeof(struct exfat_entry)) {
-                            //uint8_t type = buffer[rd_offset & bufferSize];
-                            for (int i = 0; i < sizeof(struct exfat_entry); i++) {
-                                chksum = ((chksum << 15) | (chksum >> 1)) + buffer[rd_offset++ & bufferSize];
-                            }
-                            --continuations;
-                        } else {
-                            __asm("pause");
-                        }
+                    do {
                         __asm("mfence");
+                        filled = (wr_offset - fde_offset) & bufferSize;
+                        if (filled < sizeof(struct exfat_entry)*continuations) {
+                            __asm("pause");
+                        } else {
+                            break;
+                        }
+                    } while (run);
+
+                    //uint8_t type = buffer[rd_offset & bufferSize];
+                    for (int c = 0; c < continuations; ++c) {
+                        for (int i = 0; i < sizeof(struct exfat_entry); i++) {
+                            chksum = ((chksum << 15) | (chksum >> 1)) + buffer[fde_offset++ & bufferSize];
+                        }
                     }
 
                     if (chksum == fde_chksum) {
                         printf("FDE %016zx\n", fde_offset);
+                        rd_offset = fde_offset;
                     } else {
 						fprintf(stderr, "bad checksum %04x vs. %04x\n", chksum, fde_chksum);
-                        rd_offset = fde_offset + 1;
+                        ++rd_offset;
                     }
                 } else {
                     //fprintf(stderr, "bad continuations\n");
@@ -229,12 +227,8 @@ void* read_thread(void *param) {
                 }
             } else {
                 ++rd_offset;
-                --filled;
-                __asm("mfence");
             }
-        }
-
-        if (filled < 3*sizeof(struct exfat_entry)) {
+        } else {
             __asm("pause");
         }
         __asm("mfence");
