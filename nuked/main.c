@@ -30,17 +30,22 @@
 #include <fcntl.h>
 #include <errno.h>
 
-static const size_t likely_sector_size_bytes = 512; // bytes 0x0200
-static const size_t likely_sectors_per_cluster = 256; // 0x0100
-static const size_t likely_cluster_size_bytes =
-	likely_sector_size_bytes * likely_sectors_per_cluster; // 0x020000
-static const size_t start_offset_bytes = 0x0000000116FFB000; // from whole disk beginning
-static const size_t start_offset_sector =
-	start_offset_bytes / likely_sector_size_bytes; // from disk beginning 9142232 = 0x008B7FD8
-static const size_t start_offset_cluster = start_offset_bytes / likely_cluster_size_bytes; // 0x8B7F;
+static const size_t sector_size_bytes = 512; // bytes 0x0200
+static const size_t sectors_per_cluster = 512; // 0x0200
+static const size_t cluster_size_bytes =
+	sector_size_bytes * sectors_per_cluster; // 0x040000
+static const size_t disk_size_bytes = 0x000003a352944000; // 0x0000040000000000; // 4TB
+static const size_t cluster_heap_disk_start_sector = 0x8c400;
+static const size_t cluster_heap_partition_start_sector = 0x283D8;
+static const size_t partition_start_sector = 0x64028;
 
-//static struct exfat_dev *dev;
-//static struct exfat_super_block restored_sb;
+static const size_t start_offset_bytes = 0x0000007a40000000;
+static const size_t start_offset_sector = start_offset_bytes / sector_size_bytes;
+
+// byte offset 0x458af40000 = cluster 0x115e5b
+// 0x115e5b * 0x40000 = 0x45796c0000
+// 0x458af40000 - 0x45796c0000 = 0x11880000 (start offset bytes) 0x8C400 (sector)
+// cluster 0 = byte offset 0x1181c000 = sector 0x8c0e0
 
 void dump_extfat_entry(union exfat_entries_t *ent, size_t cluster_ofs) {
     switch (ent->ent.type) {
@@ -136,7 +141,7 @@ void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_
         // File Directory Entry. starts file entry set.
         //followed by stream extension directory entry (0xC0) and then
         // from 1 to 17 of the file name extension directory entry (0xC1)
-        if ((cluster_ofs | 0xFFFFFFFFF0000000) == 0xFFFFFFFFF0000000) {
+        if ((cluster_ofs & 0xFFFFFFF) == 0) {
             fprintf(stderr, "cluster_ofs = %016zx\n", cluster_ofs);
         }
         if (file_directory_entry == NULL) {
@@ -236,11 +241,11 @@ void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_
 }
 
 int log_dir_entries(struct exfat_dev *dev) {
-    uint8_t cluster_buf[likely_cluster_size_bytes];
+    uint8_t cluster_buf[cluster_size_bytes];
 
-    size_t cluster_ofs = 0x00000031b6ffb000;
+    size_t cluster_ofs = start_offset_bytes;
     exfat_seek(dev, cluster_ofs, SEEK_SET);
-    for (cluster_t c = 0x00185000; ; ++c) {
+    for (cluster_t c = cluster_ofs / cluster_size_bytes; ; ++c) {
         ssize_t rd = exfat_read(dev, cluster_buf, sizeof(cluster_buf));
         if (rd == 0) { // eof
             return 0;
@@ -248,7 +253,7 @@ int log_dir_entries(struct exfat_dev *dev) {
             return errno;
         } else {
             cluster_search_file_directory_entries(cluster_buf, rd, cluster_ofs);
-            if ((c | 0xFFFFF000) == 0xFFFFF000) {
+            if ((c & 0xFFF) == 0) {
                 printf("CLUSTER %08x OFFSET %016zx\n", c, cluster_ofs);
                 fflush(stdout);
             }

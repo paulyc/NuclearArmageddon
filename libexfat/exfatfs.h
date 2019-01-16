@@ -120,15 +120,21 @@ struct chksum_sector_t {
 PACKED;
 STATIC_ASSERT(sizeof(struct chksum_sector_t) == 512);
 
-struct exfat_vbr_t {
-    struct exfat_super_block sb;
+struct exfat_bios_parameter_block_t {
     struct mebr_sector_t mebs[8];
     struct oem_parameters_t oem_params;
     struct zero_sector_t zs[2];
     struct chksum_sector_t chksum;
 }
 PACKED;
-STATIC_ASSERT(sizeof(struct exfat_vbr_t) == 13*512);
+STATIC_ASSERT(sizeof(struct exfat_bios_parameter_block_t) == 12*512);
+
+struct exfat_volume_boot_record_t {
+	struct exfat_super_block sb;
+    struct exfat_bios_parameter_block_t bpb[2]; // one copy and a backup
+}
+PACKED;
+STATIC_ASSERT(sizeof(struct exfat_volume_boot_record_t) == 25*512);
 
 #define EXFAT_ENTRY_VALID     0x80
 #define EXFAT_ENTRY_CONTINUED 0x40
@@ -157,9 +163,10 @@ STATIC_ASSERT(sizeof(struct exfat_entry) == 32);
 struct exfat_entry_bitmap			/* allocated clusters bitmap */
 {
 	uint8_t type;					/* EXFAT_ENTRY_BITMAP */
-	uint8_t __unknown1[19];
+	uint8_t bitmap_flags;			/* bit 0: 0 = 1st cluster heap. 1 = 2nd cluster heap. */
+	uint8_t __unknown1[18];
 	le32_t start_cluster;
-	le64_t size;					/* in bytes */
+    le64_t size;					/* in bytes = Ceil (Cluster count / 8 ) */
 }
 PACKED;
 STATIC_ASSERT(sizeof(struct exfat_entry_bitmap) == 32);

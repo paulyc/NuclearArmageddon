@@ -53,6 +53,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5F0A0E8221EE8498007A8482 /* ac3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ac3.h; sourceTree = "<group>"; };
+		5F0A0E8321EE8498007A8482 /* find_ac3.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = find_ac3.c; sourceTree = "<group>"; };
 		5F40C11F21E78F1000E6F309 /* denukify */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = denukify; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F6C031B21DDC638009F3609 /* nuked */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = nuked; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F99C03D21D5CDEB007A8482 /* dumpexfat.8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dumpexfat.8; sourceTree = "<group>"; };
@@ -268,6 +270,8 @@
 				5FAF0C5921E729EC00C28BB7 /* Makefile.am */,
 				5FAF0C5A21E729EC00C28BB7 /* main.c */,
 				5FAF0C5B21E729EC00C28BB7 /* .deps */,
+				5F0A0E8221EE8498007A8482 /* ac3.h */,
+				5F0A0E8321EE8498007A8482 /* find_ac3.c */,
 			);
 			path = denukify;
 			sourceTree = "<group>";
