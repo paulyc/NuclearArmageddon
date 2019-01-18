@@ -47,7 +47,7 @@ static const size_t start_offset_sector = start_offset_bytes / sector_size_bytes
 // 0x458af40000 - 0x45796c0000 = 0x11880000 (start offset bytes) 0x8C400 (sector)
 // cluster 0 = byte offset 0x1181c000 = sector 0x8c0e0
 
-void dump_extfat_entry(union exfat_entries_t *ent, size_t cluster_ofs) {
+void dump_exfat_entry(union exfat_entries_t *ent, size_t cluster_ofs) {
     switch (ent->ent.type) {
         case EXFAT_ENTRY_FILE:
         {
@@ -152,7 +152,7 @@ void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_
             {
                 // check the checksum
                 file_directory_entry = (struct exfat_entry_meta1 *)cluster_ptr;
-                dump_extfat_entry((union exfat_entries_t *)cluster_ptr, cluster_ofs);
+                dump_exfat_entry((union exfat_entries_t *)cluster_ptr, cluster_ofs);
                 if (file_directory_entry->continuations >= 2 && file_directory_entry->continuations <= 18) { // does not include this entry itself. range 2-18
                     le16_t chksum = exfat_calc_checksum((const struct exfat_entry*)cluster_ptr, file_directory_entry->continuations + 1);
                     if (chksum.__u16 == file_directory_entry->checksum.__u16) {
@@ -184,18 +184,18 @@ void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_
             switch (ent->ent.type) {
                 case EXFAT_ENTRY_FILE:
                 {
-                    dump_extfat_entry(ent, cluster_ofs);
+                    dump_exfat_entry(ent, cluster_ofs);
                     //size_t chksumBytes = (ent->meta1.continuations + 1) * sizeof(exfat_entry);
                     break;
                 }
                 case EXFAT_ENTRY_BITMAP:
                 {
-                    dump_extfat_entry(ent, cluster_ofs);
+                    dump_exfat_entry(ent, cluster_ofs);
                     break;
                 }
                 case EXFAT_ENTRY_UPCASE:
                 {
-                    dump_extfat_entry(ent, cluster_ofs);
+                    dump_exfat_entry(ent, cluster_ofs);
                     break;
                 }
                 case EXFAT_ENTRY_LABEL:
@@ -210,7 +210,7 @@ void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_
                 }
                 case EXFAT_ENTRY_FILE_INFO:
                 {
-                    dump_extfat_entry(ent, cluster_ofs);
+                    dump_exfat_entry(ent, cluster_ofs);
                     printf("EFI %016zx\n", cluster_ofs);
                     break;
                 }
@@ -226,7 +226,7 @@ void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_
                 }
                 case EXFAT_ENTRY_FILE_TAIL:
                 {
-                    dump_extfat_entry(ent, cluster_ofs);
+                    dump_exfat_entry(ent, cluster_ofs);
                     break;
                 }
                 default:
