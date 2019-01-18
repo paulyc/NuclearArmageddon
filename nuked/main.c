@@ -39,7 +39,8 @@ static const size_t cluster_heap_disk_start_sector = 0x8c400;
 static const size_t cluster_heap_partition_start_sector = 0x283D8;
 static const size_t partition_start_sector = 0x64028;
 
-static const size_t start_offset_bytes = 0x0000018f80000000;
+static const cluster_t start_offset_cluster = 0x00767445;
+static const size_t start_offset_bytes = start_offset_cluster * cluster_size_bytes;
 static const size_t start_offset_sector = start_offset_bytes / sector_size_bytes;
 
 // byte offset 0x458af40000 = cluster 0x115e5b
@@ -128,6 +129,12 @@ void dump_exfat_entry(union exfat_entries_t *ent, size_t cluster_ofs) {
             break;
         }
     }
+}
+
+void verify_checksum(uint8_t *cluster_ptr, size_t cluster_ofs) {
+    do {
+        ;
+    } while (0);
 }
 
 void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_size, size_t cluster_ofs_begin) {
@@ -242,31 +249,27 @@ void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_
 
 int log_dir_entries(struct exfat_dev *dev) {
     uint8_t cluster_buf[cluster_size_bytes];
-
-    size_t cluster_ofs = start_offset_bytes;
-    exfat_seek(dev, cluster_ofs, SEEK_SET);
-    for (cluster_t c = cluster_ofs / cluster_size_bytes; ; ++c) {
+    cluster_t c = start_offset_cluster;
+    exfat_seek(dev, start_offset_bytes, SEEK_SET);
+    for (;;) {
+        const size_t cluster_ofs = c * cluster_size_bytes;
         ssize_t rd = exfat_read(dev, cluster_buf, sizeof(cluster_buf));
         if (rd == 0) { // eof
-            return 0;
+            break;
         } else if (rd == -1) {
-            return errno;
+            fprintf(stderr, "error reading cluster %08x at offset %016zx: %s\n", c, cluster_ofs, strerror(errno));
+            printf("BAD_CLUSTER %08x OFFSET %016zx\n", c, cluster_ofs);
+            exfat_seek(dev, cluster_ofs + sizeof(cluster_buf), SEEK_SET);
         } else {
             cluster_search_file_directory_entries(cluster_buf, rd, cluster_ofs);
             if ((c & 0xFFF) == 0) {
                 printf("CLUSTER %08x OFFSET %016zx\n", c, cluster_ofs);
-                fflush(stdout);
             }
-            cluster_ofs += rd;
-            //if ((c | 0xFFFFFF00) == 0xFFFFFF00) {
-            //    printf("CLUSTER 0x%08x OFFSET 0x%016zx\n", c, cluster_ofs);
-            //}
-            //}
-            //if ((cluster_ofs | 0xFFFFFFFF00000000) == 0xFFFFFFFF00000000) {
-            //    printf("cluster_ofs = 0x%016zx\n", cluster_ofs);
-            //}
         }
+        fflush(stdout);
+        ++c;
     }
+    return 0;
 }
 
 int reconstruct(struct exfat_dev *dev) {

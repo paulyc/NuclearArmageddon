@@ -106,6 +106,10 @@ struct exfat_file_allocation_table * create_fat(cluster_t num_clusters) {
     return fat;
 }
 
+void free_fat(struct exfat_file_allocation_table *fat) {
+    free(fat);
+}
+
 struct exfat_volume_boot_record_t vbr = {
 	.sb = {
     //    uint8_t jump[3];                /* 0x00 jmp and nop instructions */
@@ -206,7 +210,96 @@ cluster_t find_next_free_cluster(struct exfat_file_allocation_table *const fat) 
     return -1;
 }
 
+static struct exfat_node node_prototype = {
+    .parent 		= NULL, //struct exfat_node* parent;
+    .child 			= NULL, //struct exfat_node* child;
+    .next 			= NULL,	//struct exfat_node* next;
+    .prev 			= NULL,	//struct exfat_node* prev;
+
+    .references 	= 0,	//int references;
+    .fptr_index 	= 0,	//uint32_t fptr_index;
+    .fptr_cluster 	= 0,	//cluster_t fptr_cluster;
+    .entry_offset	= 0,	//off_t entry_offset;
+    .start_cluster	= 0,	//cluster_t start_cluster;
+    .attrib 		= 0,	//uint16_t attrib;
+    .continuations	= 0,	//uint8_t continuations;
+    .is_contiguous	= 0,	//bool is_contiguous : 1;
+    .is_cached		= 0,	//bool is_cached : 1;
+    .is_dirty		= 0,	//bool is_dirty : 1;
+    .is_unlinked	= 0,	//bool is_unlinked : 1;
+    .size			= 0,	//uint64_t size;
+    .mtime			= 0,	//time_t mtime
+    .atime			= 0,	//time_t atime;
+    .name			= {0},	//le16_t name[EXFAT_NAME_MAX + 1];
+};
+
+struct exfat_node* make_node() {
+    struct exfat_node *node = malloc(sizeof(struct exfat_node));
+    memcpy(node, &node_prototype, sizeof(struct exfat_node));
+    return node;
+}
+
+void free_node(struct exfat_node *node) {
+    free(node);
+}
+
+void dump_exfat_entry(union exfat_entries_t *ent, size_t cluster_ofs);
+
+struct exfat_node* try_load_node_from_fde(struct exfat *fs, size_t fde_offset) {
+    struct exfat_node *node = make_node();
+    do {
+        struct exfat_node_entries node_entries;
+        ssize_t res = exfat_seek(fs->dev, fde_offset, SEEK_SET);
+        size_t to_read = 3*sizeof(node_entries.efi);
+        res = exfat_read(fs->dev, &node_entries, to_read);
+        if (res != to_read) { break; }
+        const int continuations_left = node_entries.fde.continuations - 3;
+        to_read = continuations_left*sizeof(union exfat_entries_t);
+        res = exfat_read(fs->dev, node_entries.u_continuations, to_read);
+        if (res != to_read) { break; }
+
+        // verify checksum
+        //dump_exfat_entry((union exfat_entries_t *)&node_entries, fde_offset);
+        const uint8_t continuations = node_entries.fde.continuations;
+        if (continuations < 2 || continuations > 18) {
+            fprintf(stderr, "bad number of continuations %d\n", continuations);
+            break;
+        }
+
+        le16_t chksum = exfat_calc_checksum((const struct exfat_entry*)&node_entries, continuations + 1);
+
+        if (chksum.__u16 != node_entries.fde.checksum.__u16) {
+            fprintf(stderr, "bad checksum %04x vs. %04x\n", chksum.__u16, node_entries.fde.checksum.__u16);
+            break;
+        }
+
+		// todo
+
+        return node;
+    } while(0);
+//fail:
+    free_node(node);
+    return NULL;
+}
+
+struct exfat* init_filesystem(struct exfat_dev *dev) {
+    struct exfat *fs = malloc(sizeof(struct exfat));
+    fs->dev = dev;
+    //fs->upcase =
+    fs->sb	= &vbr.sb;
+    fs->root	= make_node();
+    fs->repair = EXFAT_REPAIR_NO;
+    return fs;
+}
+
+void free_filesystem(struct exfat *fs) {
+    free_node(fs->root);
+    free(fs);
+}
+
 int reconstruct(struct exfat_dev *dev, FILE *logfile) {
+    struct exfat *fs = init_filesystem(dev);
+
     struct exfat_file_allocation_table *fat = create_fat(vbr.sb.cluster_count.__u32);
     const size_t bmp_size_clusters =
         bmp_entry.size.__u64 / cluster_size_bytes +
@@ -222,6 +315,10 @@ int reconstruct(struct exfat_dev *dev, FILE *logfile) {
         }
     }
     fat->fat_entries[c] = EXFAT_CLUSTER_END;
+
+    // TODO write FAT to disk or log
+
+    free_fat(fat);
     return 0;
 }
 
@@ -237,8 +334,8 @@ int main(int argc, char* argv[])
     int opt, ret = 0;
     const char* options;
     const char* spec = NULL;
-    struct exfat_dev *dev;
-    FILE *logfile;
+    struct exfat_dev *dev = NULL;
+    FILE *logfile = NULL;
 
     fprintf(stderr, "%s %s\n", argv[0], VERSION);
 
@@ -261,24 +358,29 @@ int main(int argc, char* argv[])
     fprintf(stderr, "Reconstructing nuked file system on %s.\n", spec);
     dev = exfat_open(spec, EXFAT_MODE_RW);
 
-    if (dev != NULL) {
+    do {
+        if (dev == NULL) {
+            ret = errno;
+            fprintf(stderr, "exfat_open(%s) failed: %s\n", spec, strerror(ret));
+            break;
+        }
+
         spec = argv[optind+1];
         logfile = fopen(spec, "r");
-        if (logfile != NULL) {
-            ret = reconstruct(dev, logfile);
-            fclose(logfile);
-            if (ret != 0) {
-                fprintf(stderr, "reconstruct() returned error: %s\n", strerror(ret));
-            }
-        } else {
+        if (logfile == NULL) {
             ret = errno;
-            fprintf(stderr, "fopen(%s) returned error: %s\n", spec, strerror(ret));
+            fprintf(stderr, "fopen(%s) failed: %s\n", spec, strerror(ret));
+            break;
         }
-        exfat_close(dev);
-    } else {
-        ret = errno;
-        fprintf(stderr, "open_rw(%s) returned error: %s\n", spec, strerror(ret));
-    }
+
+        ret = reconstruct(dev, logfile);
+        if (ret != 0) {
+            fprintf(stderr, "reconstruct() returned error: %s\n", strerror(ret));
+        }
+    } while (0);
+
+    exfat_close(dev);
+    fclose(logfile);
 
     return ret;
 }

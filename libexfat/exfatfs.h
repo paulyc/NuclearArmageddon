@@ -258,4 +258,12 @@ union exfat_entries_t {
 PACKED;
 STATIC_ASSERT(sizeof(union exfat_entries_t) == 32);
 
+struct exfat_node_entries {
+    struct exfat_entry_meta1 fde;
+    struct exfat_entry_meta2 efi;
+    struct exfat_entry_name efn;
+    union exfat_entries_t u_continuations[16]; // up to 18 minus the efi and efn
+}
+PACKED;
+
 #endif /* ifndef EXFATFS_H_INCLUDED */
