@@ -96,12 +96,12 @@ struct exfat_file_allocation_table * create_fat(cluster_t num_clusters) {
     const size_t sectors = bytes / sector_size_bytes + 1;
     struct exfat_file_allocation_table *fat = malloc(sectors * sector_size_bytes);
     fat->fat_entries[0] = 0x0FFFFFF8; // Media descriptor hard drive
-    fat->fat_entries[1] = 0xFFFFFFFF;
-    fat->fat_entries[2] = 0; // TODO set to next cluster of the cluster Allocation bitmap
-    fat->fat_entries[3] = 0xFFFFFFFF; // Up-Case table
-    fat->fat_entries[4] = 0xFFFFFFFF; // Root directory
+    fat->fat_entries[1] = EXFAT_CLUSTER_END; // Unused?
+    fat->fat_entries[2] = EXFAT_CLUSTER_END; // To be set to next cluster of the Allocation bitmap
+    fat->fat_entries[3] = EXFAT_CLUSTER_END; // Up-Case table
+    fat->fat_entries[4] = EXFAT_CLUSTER_END; // Root directory
     for (cluster_t c = 5; c < num_clusters + 2; ++c) {
-        fat->fat_entries[c] = 0;
+        fat->fat_entries[c] = EXFAT_CLUSTER_FREE;
     }
     return fat;
 }
@@ -197,6 +197,34 @@ void restore_fat(struct exfat_dev *dev) {
     //exfat_write(dev, &chksum_sector, sizeof(struct chksum_sector_t)); // 11
 }
 
+cluster_t find_next_free_cluster(struct exfat_file_allocation_table *const fat) {
+    for (cluster_t c = 0; c < sizeof(fat->fat_entries); ++c) {
+        if (fat->fat_entries[c] == EXFAT_CLUSTER_FREE) {
+            return c;
+        }
+    }
+    return -1;
+}
+
+int reconstruct(struct exfat_dev *dev, FILE *logfile) {
+    struct exfat_file_allocation_table *fat = create_fat(vbr.sb.cluster_count.__u32);
+    const size_t bmp_size_clusters =
+        bmp_entry.size.__u64 / cluster_size_bytes +
+        bmp_entry.size.__u64 % cluster_size_bytes;
+	cluster_t c = 2;
+    for (size_t i = 1; i < bmp_size_clusters; ++i) {
+        cluster_t next = find_next_free_cluster(fat);
+        if (next == -1) {
+            return -1;
+        } else {
+            fat->fat_entries[c] = next;
+            c = next;
+        }
+    }
+    fat->fat_entries[c] = EXFAT_CLUSTER_END;
+    return 0;
+}
+
 static void usage(const char* prog)
 {
     fprintf(stderr, "Usage: %s <device> <logfile>\n", prog);
@@ -206,7 +234,7 @@ static void usage(const char* prog)
 
 int main(int argc, char* argv[])
 {
-    int opt, ret;
+    int opt, ret = 0;
     const char* options;
     const char* spec = NULL;
     struct exfat_dev *dev;
@@ -230,30 +258,27 @@ int main(int argc, char* argv[])
     if (argc - optind != 2)
         usage(argv[0]);
     spec = argv[optind];
-	// just hardcoding for now? so it cant get screwed up
-    //spec = "/dev/disk2s2";
-    //fprintf(stderr, "Reconstructing nuked file system on %s.\n", spec);
-    dev = exfat_open(spec, EXFAT_MODE_RO);
+    fprintf(stderr, "Reconstructing nuked file system on %s.\n", spec);
+    dev = exfat_open(spec, EXFAT_MODE_RW);
 
     if (dev != NULL) {
         spec = argv[optind+1];
         logfile = fopen(spec, "r");
         if (logfile != NULL) {
-            /*        ret = reconstruct(dev);
-             if (ret != 0) {
-             fprintf(stderr, "reconstruct() returned error: %s\n", strerror(ret));
-             return ret;
-             }
-             */        //ret = dump
+            ret = reconstruct(dev, logfile);
             fclose(logfile);
+            if (ret != 0) {
+                fprintf(stderr, "reconstruct() returned error: %s\n", strerror(ret));
+            }
         } else {
-
+            ret = errno;
+            fprintf(stderr, "fopen(%s) returned error: %s\n", spec, strerror(ret));
         }
         exfat_close(dev);
     } else {
         ret = errno;
-        fprintf(stderr, "open_ro() returned error: %s\n", strerror(ret));
+        fprintf(stderr, "open_rw(%s) returned error: %s\n", spec, strerror(ret));
     }
 
-    return 0;
+    return ret;
 }
