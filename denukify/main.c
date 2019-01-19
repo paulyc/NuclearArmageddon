@@ -75,12 +75,19 @@ STATIC_ASSERT(sizeof(struct exfat_cluster_t) == SECTOR_SIZE_BYTES*SECTORS_PER_CL
 
 //STATIC_ASSERT(sizeof(struct exfat_filesystem) == 1 + 24 + (0xE8DB79+2) );
 
+struct exfat_entry_label volume_label =		/* volume label */
+{
+	.type = EXFAT_ENTRY_LABEL,                                                 //uint8_t type; /* EXFAT_ENTRY_LABEL */
+	.length = 8,                                                               //uint8_t length; /* number of characters */
+	.name = { 'E', 'l', 'e', 'm', 'e', 'n', 't', 's', 0, 0, 0, 0, 0, 0, 0 },   //le16_t name[EXFAT_ENAME_MAX]; /* in UTF-16LE */
+};
+
 struct exfat_file_allocation_table * create_fat(cluster_t num_clusters) {
     const size_t bytes = sizeof(cluster_t) * (num_clusters + 2);
     const size_t sectors = bytes / sector_size_bytes + 1;
     struct exfat_file_allocation_table *fat = malloc(sectors * sector_size_bytes);
     fat->fat_entries[0] = 0x0FFFFFF8; // Media descriptor hard drive
-    fat->fat_entries[1] = EXFAT_CLUSTER_END; // Unused?
+    fat->fat_entries[1] = EXFAT_CLUSTER_END; // Label?
     fat->fat_entries[2] = EXFAT_CLUSTER_END; // To be set to next cluster of the Allocation bitmap
     //fat->fat_entries[3] = EXFAT_CLUSTER_END; // Up-Case table
     //fat->fat_entries[4] = EXFAT_CLUSTER_END; // Root directory
@@ -290,13 +297,11 @@ struct exfat_entry_bitmap bmp_entry =            /* allocated clusters bitmap */
     .size = (FAT_CLUSTER_COUNT) / 8 + (FAT_CLUSTER_COUNT) % 8 /* in bytes = Ceil (Cluster count / 8 ) */
 };
 
-#define CLUSTER_HEAP_SIZE (BMAP_SIZE(CLUSTER_COUNT-2))
+#define CLUSTER_HEAP_SIZE (BMAP_SIZE(FAT_CLUSTER_COUNT))
 #define CLUSTER_HEAP_SIZE_BYTES (CLUSTER_HEAP_SIZE * sizeof(bitmap_t))
 
 struct exfat_cluster_heap {
     bitmap_t allocation_flags[CLUSTER_HEAP_SIZE];
-    // padded to sector or cluster?
-    //uint8_t padding[SECTOR_SIZE_BYTES - (CLUSTER_HEAP_SIZE_BYTES % SECTOR_SIZE_BYTES];
 }
 PACKED;
 STATIC_ASSERT(sizeof(struct exfat_cluster_heap) == CLUSTER_HEAP_SIZE_BYTES);
