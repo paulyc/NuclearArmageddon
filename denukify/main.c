@@ -30,14 +30,15 @@
 #include <fcntl.h>
 #include <errno.h>
 
-#define SECTOR_SIZE_BYTES 512
-#define SECTORS_PER_CLUSTER 512
-#define CLUSTER_COUNT 0xE8DB79
+#define SECTOR_SIZE_BYTES ((size_t)512)
+#define SECTORS_PER_CLUSTER ((size_t)512)
+#define CLUSTER_COUNT ((cluster_t)0xE8DB79)
 #define CLUSTER_COUNT_SECTORS (CLUSTER_COUNT * SECTORS_PER_CLUSTER)
-#define DISK_SIZE_BYTES 0x000003a352944000
-#define CLUSTER_HEAP_DISK_START_SECTOR 0x8c400
-#define CLUSTER_HEAP_PARTITION_START_SECTOR 0x283D8
-#define PARTITION_START_SECTOR 0x64028
+#define CLUSTER_SIZE_BYTES (CLUSTER_COUNT_SECTORS * SECTOR_SIZE_BYTES)
+#define DISK_SIZE_BYTES ((size_t)0x000003a352944000)
+#define CLUSTER_HEAP_DISK_START_SECTOR ((size_t)0x8c400)
+#define CLUSTER_HEAP_PARTITION_START_SECTOR ((size_t)0x283D8)
+#define PARTITION_START_SECTOR ((size_t)0x64028)
 
 static const size_t sector_size_bytes = SECTOR_SIZE_BYTES; // bytes 0x0200
 static const size_t sectors_per_cluster = SECTORS_PER_CLUSTER; // 0x0200
@@ -71,14 +72,6 @@ struct exfat_cluster_t
 PACKED;
 STATIC_ASSERT(sizeof(struct exfat_cluster_t) == SECTOR_SIZE_BYTES*SECTORS_PER_CLUSTER);
 
-struct exfat_entry_bitmap bmp_entry =            /* allocated clusters bitmap */
-{
-    .type = EXFAT_ENTRY_BITMAP,                    /* EXFAT_ENTRY_BITMAP */
-    .bitmap_flags = 0,            /* bit 0: 0 = 1st cluster heap. 1 = 2nd cluster heap. */
-    .__unknown1 = { 0 },
-    .start_cluster = 2,
-    .size = cluster_count / 8 + cluster_count % 8 /* in bytes = Ceil (Cluster count / 8 ) */
-};
 /*
 struct exfat_cluster_heap_t
 {
@@ -137,7 +130,7 @@ struct exfat_volume_boot_record_t vbr = {
     //    le32_t cluster_sector_start;    /* 0x58 first cluster sector */
         .cluster_sector_start = 0x283D8,
     //    le32_t cluster_count;            /* 0x5C total clusters count */
-        .cluster_count = 0xE8DB79,
+        .cluster_count = 0xE8DB79 - 2,
     //    le32_t rootdir_cluster;            /* 0x60 first cluster of the root dir */
         .rootdir_cluster = 0,
     //    le32_t volume_serial;            /* 0x64 volume serial number */
@@ -160,7 +153,7 @@ struct exfat_volume_boot_record_t vbr = {
     //    uint8_t drive_no;                /* 0x6F always 0x80 */
         .drive_no = 0x80,
     //    uint8_t allocated_percent;        /* 0x70 percentage of allocated space */
-        .allocated_percent = 0,
+        .allocated_percent = 100,
     //    uint8_t __unused2[397];            /* 0x71 always 0 */
         .__unused2 = 0,
     //    le16_t boot_signature;            /* the value of 0xAA55 */
@@ -303,6 +296,51 @@ struct exfat* init_filesystem(struct exfat_dev *dev) {
 void free_filesystem(struct exfat *fs) {
     free_node(fs->root);
     free(fs);
+}
+
+struct exfat_entry_bitmap bmp_entry =            /* allocated clusters bitmap */
+{
+    .type = EXFAT_ENTRY_BITMAP,                    /* EXFAT_ENTRY_BITMAP */
+    .bitmap_flags = 0,            /* bit 0: 0 = 1st cluster heap. 1 = 2nd cluster heap. */
+    .__unknown1 = { 0 },
+    .start_cluster = 2,
+    .size = (CLUSTER_COUNT - 2) / 8 + (CLUSTER_COUNT - 2) % 8 /* in bytes = Ceil (Cluster count / 8 ) */
+};
+
+#define CLUSTER_HEAP_SIZE (BMAP_SIZE(CLUSTER_COUNT-2))
+#define CLUSTER_HEAP_SIZE_BYTES (CLUSTER_HEAP_SIZE * sizeof(bitmap_t))
+
+struct exfat_cluster_heap {
+    bitmap_t allocation_flags[CLUSTER_HEAP_SIZE];
+}
+PACKED;
+STATIC_ASSERT(sizeof(struct exfat_cluster_heap) == CLUSTER_HEAP_SIZE_BYTES);
+
+struct exfat_cluster_heap* init_cluster_heap(struct exfat_file_allocation_table *fat) {
+    struct exfat_cluster_heap *heap = malloc(sizeof(struct exfat_cluster_heap));
+    do {
+        const size_t bmp_size_clusters =
+            bmp_entry.size.__u64 / cluster_size_bytes +
+            bmp_entry.size.__u64 % cluster_size_bytes;
+        cluster_t c = 2;
+        for (size_t i = 1; i < bmp_size_clusters; ++i) {
+            cluster_t next = find_next_free_cluster(fat);
+            if (next == -1) {
+                break;
+            } else {
+                fat->fat_entries[c] = next;
+                c = next;
+            }
+        }
+        fat->fat_entries[c] = EXFAT_CLUSTER_END;
+        return heap;
+    } while (0);
+
+    return NULL;
+}
+
+void free_cluster_heap(struct exfat_cluster_heap *heap) {
+    free(heap);
 }
 
 int reconstruct(struct exfat_dev *dev, FILE *logfile) {
