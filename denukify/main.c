@@ -30,38 +30,46 @@
 #include <fcntl.h>
 #include <errno.h>
 
-static const size_t sector_size_bytes = 512; // bytes 0x0200
-static const size_t sectors_per_cluster = 512; // 0x0200
-static const size_t cluster_size_bytes =
-sector_size_bytes * sectors_per_cluster; // 0x040000
-static const size_t disk_size_bytes = 0x000003a352944000; // 0x0000040000000000; // 4TB
-static const size_t cluster_heap_disk_start_sector = 0x8c400;
-static const size_t cluster_heap_partition_start_sector = 0x283D8;
-static const size_t partition_start_sector = 0x64028;
-static const size_t cluster_count = 0xE8DB79;
+#define SECTOR_SIZE_BYTES 512
+#define SECTORS_PER_CLUSTER 512
+#define CLUSTER_COUNT 0xE8DB79
+#define CLUSTER_COUNT_SECTORS (CLUSTER_COUNT * SECTORS_PER_CLUSTER)
+#define DISK_SIZE_BYTES 0x000003a352944000
+#define CLUSTER_HEAP_DISK_START_SECTOR 0x8c400
+#define CLUSTER_HEAP_PARTITION_START_SECTOR 0x283D8
+#define PARTITION_START_SECTOR 0x64028
+
+static const size_t sector_size_bytes = SECTOR_SIZE_BYTES; // bytes 0x0200
+static const size_t sectors_per_cluster = SECTORS_PER_CLUSTER; // 0x0200
+static const size_t cluster_size_bytes = SECTOR_SIZE_BYTES * SECTORS_PER_CLUSTER;
+static const size_t disk_size_bytes = DISK_SIZE_BYTES; // 0x0000040000000000; // 4TB
+static const size_t cluster_heap_disk_start_sector = CLUSTER_HEAP_DISK_START_SECTOR;
+static const size_t cluster_heap_partition_start_sector = CLUSTER_HEAP_PARTITION_START_SECTOR;
+static const size_t partition_start_sector = PARTITION_START_SECTOR;
+static const size_t cluster_count = CLUSTER_COUNT;
 
 // rounded to sector boundary
 struct exfat_file_allocation_table
 {
-    cluster_t fat_entries[cluster_count+2];
-    uint8_t padding[sector_size_bytes - ((cluster_count + 2) % sector_size_bytes)];
+    cluster_t fat_entries[CLUSTER_COUNT];
+    uint8_t padding[SECTOR_SIZE_BYTES - ((CLUSTER_COUNT<<2) % SECTOR_SIZE_BYTES)];
 }
 PACKED;
-//STATIC_ASSERT(sizeof(struct exfat_file_allocation_table) == (0xE8DB7B << 2) + 512 - ((0xE8DB7B << 2)%512));
+STATIC_ASSERT(sizeof(struct exfat_file_allocation_table) == (CLUSTER_COUNT << 2) + SECTOR_SIZE_BYTES - ((CLUSTER_COUNT << 2) % SECTOR_SIZE_BYTES) && (sizeof(struct exfat_file_allocation_table) % SECTOR_SIZE_BYTES) == 0 );
 
 struct exfat_sector_t
 {
-    uint8_t data[sector_size_bytes];
+    uint8_t data[SECTOR_SIZE_BYTES];
 }
 PACKED;
 STATIC_ASSERT(sizeof(struct exfat_sector_t) == 512);
 
 struct exfat_cluster_t
 {
-    struct exfat_sector_t sectors[sectors_per_cluster];
+    struct exfat_sector_t sectors[SECTORS_PER_CLUSTER];
 }
 PACKED;
-STATIC_ASSERT(sizeof(struct exfat_cluster_t) == 512*512);
+STATIC_ASSERT(sizeof(struct exfat_cluster_t) == SECTOR_SIZE_BYTES*SECTORS_PER_CLUSTER);
 
 struct exfat_entry_bitmap bmp_entry =            /* allocated clusters bitmap */
 {
@@ -194,10 +202,10 @@ void restore_fat(struct exfat_dev *dev) {
     }
     //exfat_write(dev, zero_sector, sizeof(zero_sector)); // 9
 	//exfat_write(dev, zero_sector, sizeof(zero_sector)); // 10
-    for (size_t i = 1; i < sizeof(vbr.bpb[0].chksum.chksum); ++i) {
-        vbr.bpb[0].chksum.chksum[i] = vbr.bpb[0].chksum.chksum[0];
-    }
-    memcpy(vbr.bpb[1].chksum.chksum, vbr.bpb[0].chksum.chksum, sizeof(vbr.bpb[0].chksum.chksum));
+    //for (size_t i = 1; i < sizeof(vbr.bpb[0].chksum.chksum); ++i) {
+    //    vbr.bpb[0].chksum.chksum[i] = vbr.bpb[0].chksum.chksum[0];
+    //}
+    //memcpy(vbr.bpb[1].chksum.chksum, vbr.bpb[0].chksum.chksum, sizeof(vbr.bpb[0].chksum.chksum));
     //exfat_write(dev, &chksum_sector, sizeof(struct chksum_sector_t)); // 11
 }
 

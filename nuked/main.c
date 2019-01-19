@@ -39,7 +39,7 @@ static const size_t cluster_heap_disk_start_sector = 0x8c400;
 static const size_t cluster_heap_partition_start_sector = 0x283D8;
 static const size_t partition_start_sector = 0x64028;
 
-static const cluster_t start_offset_cluster = 0x00767445;
+static const cluster_t start_offset_cluster = 0x0087b000;
 static const size_t start_offset_bytes = start_offset_cluster * cluster_size_bytes;
 static const size_t start_offset_sector = start_offset_bytes / sector_size_bytes;
 
