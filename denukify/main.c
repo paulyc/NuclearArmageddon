@@ -34,6 +34,7 @@
 #define SECTORS_PER_CLUSTER ((size_t)512)
 #define CLUSTER_COUNT ((cluster_t)0xE8DB79)
 #define CLUSTER_COUNT_SECTORS (CLUSTER_COUNT * SECTORS_PER_CLUSTER)
+#define FAT_CLUSTER_COUNT (CLUSTER_COUNT - 2)
 #define CLUSTER_SIZE_BYTES (CLUSTER_COUNT_SECTORS * SECTOR_SIZE_BYTES)
 #define DISK_SIZE_BYTES ((size_t)0x000003a352944000)
 #define CLUSTER_HEAP_DISK_START_SECTOR ((size_t)0x8c400)
@@ -63,7 +64,7 @@ struct exfat_sector_t
     uint8_t data[SECTOR_SIZE_BYTES];
 }
 PACKED;
-STATIC_ASSERT(sizeof(struct exfat_sector_t) == 512);
+STATIC_ASSERT(sizeof(struct exfat_sector_t) == SECTOR_SIZE_BYTES);
 
 struct exfat_cluster_t
 {
@@ -72,24 +73,6 @@ struct exfat_cluster_t
 PACKED;
 STATIC_ASSERT(sizeof(struct exfat_cluster_t) == SECTOR_SIZE_BYTES*SECTORS_PER_CLUSTER);
 
-/*
-struct exfat_cluster_heap_t
-{
-	struct exfat_
-}
-PACKED;
-
-union exfat_cluster
-{
-    struct exfat_cluster_t cluster;
-}
-*/
-struct exfat_filesystem
-{
-    struct exfat_volume_boot_record_t vbr;
-    struct exfat_file_allocation_table fat;
-}
-PACKED;
 //STATIC_ASSERT(sizeof(struct exfat_filesystem) == 1 + 24 + (0xE8DB79+2) );
 
 struct exfat_file_allocation_table * create_fat(cluster_t num_clusters) {
@@ -99,9 +82,9 @@ struct exfat_file_allocation_table * create_fat(cluster_t num_clusters) {
     fat->fat_entries[0] = 0x0FFFFFF8; // Media descriptor hard drive
     fat->fat_entries[1] = EXFAT_CLUSTER_END; // Unused?
     fat->fat_entries[2] = EXFAT_CLUSTER_END; // To be set to next cluster of the Allocation bitmap
-    fat->fat_entries[3] = EXFAT_CLUSTER_END; // Up-Case table
-    fat->fat_entries[4] = EXFAT_CLUSTER_END; // Root directory
-    for (cluster_t c = 5; c < num_clusters + 2; ++c) {
+    //fat->fat_entries[3] = EXFAT_CLUSTER_END; // Up-Case table
+    //fat->fat_entries[4] = EXFAT_CLUSTER_END; // Root directory
+    for (cluster_t c = 3; c < num_clusters + 2; ++c) {
         fat->fat_entries[c] = EXFAT_CLUSTER_FREE;
     }
     return fat;
@@ -120,7 +103,7 @@ struct exfat_volume_boot_record_t vbr = {
     //    uint8_t    __unused1[53];            /* 0x0B always 0 */
         .__unused1 = { 0 },
     //    le64_t sector_start;            /* 0x40 partition first sector */
-        .sector_start = 0x64028,		// 409640
+        .sector_start = PARTITION_START_SECTOR,		// 409640
     //    le64_t sector_count;            /* 0x48 partition sectors count */
         .sector_count = 0x1D1B977B7, 	// 7813560247
     //    le32_t fat_sector_start;        /* 0x50 FAT first sector */
@@ -128,9 +111,9 @@ struct exfat_volume_boot_record_t vbr = {
     //    le32_t fat_sector_count;        /* 0x54 FAT sectors count */
         .fat_sector_count = 0,
     //    le32_t cluster_sector_start;    /* 0x58 first cluster sector */
-        .cluster_sector_start = 0x283D8,
+        .cluster_sector_start = CLUSTER_HEAP_PARTITION_START_SECTOR,
     //    le32_t cluster_count;            /* 0x5C total clusters count */
-        .cluster_count = 0xE8DB79 - 2,
+        .cluster_count = FAT_CLUSTER_COUNT,
     //    le32_t rootdir_cluster;            /* 0x60 first cluster of the root dir */
         .rootdir_cluster = 0,
     //    le32_t volume_serial;            /* 0x64 volume serial number */
@@ -202,7 +185,7 @@ void restore_fat(struct exfat_dev *dev) {
     //exfat_write(dev, &chksum_sector, sizeof(struct chksum_sector_t)); // 11
 }
 
-cluster_t find_next_free_cluster(struct exfat_file_allocation_table *const fat) {
+cluster_t find_next_free_cluster(const struct exfat_file_allocation_table *const fat) {
     for (cluster_t c = 0; c < sizeof(fat->fat_entries); ++c) {
         if (fat->fat_entries[c] == EXFAT_CLUSTER_FREE) {
             return c;
@@ -304,7 +287,7 @@ struct exfat_entry_bitmap bmp_entry =            /* allocated clusters bitmap */
     .bitmap_flags = 0,            /* bit 0: 0 = 1st cluster heap. 1 = 2nd cluster heap. */
     .__unknown1 = { 0 },
     .start_cluster = 2,
-    .size = (CLUSTER_COUNT - 2) / 8 + (CLUSTER_COUNT - 2) % 8 /* in bytes = Ceil (Cluster count / 8 ) */
+    .size = (FAT_CLUSTER_COUNT) / 8 + (FAT_CLUSTER_COUNT) % 8 /* in bytes = Ceil (Cluster count / 8 ) */
 };
 
 #define CLUSTER_HEAP_SIZE (BMAP_SIZE(CLUSTER_COUNT-2))
@@ -312,12 +295,16 @@ struct exfat_entry_bitmap bmp_entry =            /* allocated clusters bitmap */
 
 struct exfat_cluster_heap {
     bitmap_t allocation_flags[CLUSTER_HEAP_SIZE];
+    // padded to sector or cluster?
+    //uint8_t padding[SECTOR_SIZE_BYTES - (CLUSTER_HEAP_SIZE_BYTES % SECTOR_SIZE_BYTES];
 }
 PACKED;
 STATIC_ASSERT(sizeof(struct exfat_cluster_heap) == CLUSTER_HEAP_SIZE_BYTES);
 
 struct exfat_cluster_heap* init_cluster_heap(struct exfat_file_allocation_table *fat) {
     struct exfat_cluster_heap *heap = malloc(sizeof(struct exfat_cluster_heap));
+    // mark everything allocated so we don't accidentally overwrite any data
+    memset(heap, 0xFF, sizeof(struct exfat_cluster_heap));
     do {
         const size_t bmp_size_clusters =
             bmp_entry.size.__u64 / cluster_size_bytes +
@@ -343,27 +330,64 @@ void free_cluster_heap(struct exfat_cluster_heap *heap) {
     free(heap);
 }
 
+struct exfat_upcase_table
+{
+    uint16_t upcase_entries[0xFFFF];
+}
+PACKED;
+STATIC_ASSERT(sizeof(struct exfat_upcase_table) == 0xFFFF * sizeof(uint16_t)); //0x1FFFE
+
+struct exfat_entry_upcase upcase_entry =    /* upper case translation table */
+{
+	.type          = EXFAT_ENTRY_UPCASE,   //uint8_t type; /* EXFAT_ENTRY_UPCASE */
+	.__unknown1    = {0},                  //uint8_t __unknown1[3];
+	.checksum      = {0},                  //le32_t checksum;
+	.__unknown2    = {0},                  //.uint8_t __unknown2[12];
+	.start_cluster = 0,                    //le32_t start_cluster;
+	.size          = sizeof(struct exfat_upcase_table), //le64_t size; /* in bytes */
+};
+
+uint32_t upcase_checksum(const uint8_t *const data, size_t data_bytes)
+{
+    uint32_t chksum = 0;
+    for (size_t i = 0; i < data_bytes; ++i) {
+        chksum = ((chksum << 31) | (chksum >> 1)) + (uint32_t)data[i];
+    }
+    return chksum;
+}
+
+struct exfat_upcase_table * init_upcase_table(struct exfat_file_allocation_table *fat) {
+    struct exfat_upcase_table *tbl = malloc(sizeof(struct exfat_upcase_table));
+    for (int i = 0; i < sizeof(tbl->upcase_entries); ++i) {
+        tbl->upcase_entries[i] = i;
+    }
+    // ASCII
+    for (char ch = 'a'; ch <= 'z'; ++ch) {
+        tbl->upcase_entries[ch] = ch ^ 0x20;
+    }
+    upcase_entry.checksum.__u32 = upcase_checksum((const uint8_t *const)tbl->upcase_entries, sizeof(tbl->upcase_entries));
+    cluster_t c = find_next_free_cluster(fat);
+    upcase_entry.start_cluster.__u32 = c;
+    fat->fat_entries[c] = EXFAT_CLUSTER_END;
+    return tbl;
+}
+
+void free_upcase_table(struct exfat_upcase_table *tbl) {
+    free(tbl);
+}
+
 int reconstruct(struct exfat_dev *dev, FILE *logfile) {
     struct exfat *fs = init_filesystem(dev);
 
     struct exfat_file_allocation_table *fat = create_fat(vbr.sb.cluster_count.__u32);
-    const size_t bmp_size_clusters =
-        bmp_entry.size.__u64 / cluster_size_bytes +
-        bmp_entry.size.__u64 % cluster_size_bytes;
-	cluster_t c = 2;
-    for (size_t i = 1; i < bmp_size_clusters; ++i) {
-        cluster_t next = find_next_free_cluster(fat);
-        if (next == -1) {
-            return -1;
-        } else {
-            fat->fat_entries[c] = next;
-            c = next;
-        }
-    }
-    fat->fat_entries[c] = EXFAT_CLUSTER_END;
+    struct exfat_cluster_heap *heap = init_cluster_heap(fat);
+    struct exfat_upcase_table *upcase = init_upcase_table(fat);
+
 
     // TODO write FAT to disk or log
 
+    free_upcase_table(upcase);
+    free_cluster_heap(heap);
     free_fat(fat);
     return 0;
 }

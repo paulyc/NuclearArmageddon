@@ -207,13 +207,14 @@ struct exfat_entry_meta1			/* file or directory info (part 1) */
 	uint8_t continuations;
 	le16_t checksum;
 	le16_t attrib;					/* combination of EXFAT_ATTRIB_xxx */
-	le16_t __unknown1;
+	uint8_t __unknown1[2];
 	le16_t crtime, crdate;			/* creation date and time */
 	le16_t mtime, mdate;			/* latest modification date and time */
 	le16_t atime, adate;			/* latest access date and time */
 	uint8_t crtime_cs;				/* creation time in cs (centiseconds) */
 	uint8_t mtime_cs;				/* latest modification time in cs */
-	uint8_t __unknown2[10];
+	uint8_t atime_cs;               /* latest access time in cs */
+	uint8_t __unknown2[9];
 }
 PACKED;
 STATIC_ASSERT(sizeof(struct exfat_entry_meta1) == 32);
@@ -246,7 +247,8 @@ struct exfat_entry_name				/* file or directory name */
 PACKED;
 STATIC_ASSERT(sizeof(struct exfat_entry_name) == 32);
 
-union exfat_entries_t {
+union exfat_entries_t
+{
     struct exfat_entry ent;
     struct exfat_entry_bitmap bitmap;
     struct exfat_entry_upcase upcase;
@@ -258,7 +260,8 @@ union exfat_entries_t {
 PACKED;
 STATIC_ASSERT(sizeof(union exfat_entries_t) == 32);
 
-struct exfat_node_entries {
+struct exfat_node_entries
+{
     struct exfat_entry_meta1 fde;
     struct exfat_entry_meta2 efi;
     struct exfat_entry_name efn;
