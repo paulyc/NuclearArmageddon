@@ -229,7 +229,7 @@ struct exfat_entry_meta2			/* file or directory info (part 2) */
 	uint8_t __unknown1;
 	uint8_t name_length;
 	le16_t name_hash;
-	le16_t __unknown2;
+	uint8_t __unknown2[2];
 	le64_t valid_size;				/* in bytes, less or equal to size */
 	uint8_t __unknown3[4];
 	le32_t start_cluster;
@@ -260,7 +260,7 @@ union exfat_entries_t
 PACKED;
 STATIC_ASSERT(sizeof(union exfat_entries_t) == 32);
 
-struct exfat_node_entries
+struct exfat_node_entry
 {
     struct exfat_entry_meta1 fde;
     struct exfat_entry_meta2 efi;
