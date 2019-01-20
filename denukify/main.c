@@ -415,22 +415,20 @@ void free_directory(struct exfat_node_entry *dir) {
 
 struct bptree_node
 {
-    struct exfat_entry_meta2 entry;
-    uint64_t offset;
-    uint32_t c0; // offsets into the bptree_heap
-    uint32_t c1;
-    uint32_t c2;
-    uint32_t c3;
-    uint32_t c4;
-    uint32_t c5;
-    uint32_t c6;
-    uint32_t c7;
+    struct exfat_entry_meta2 entry; // 32 bytes. file or directory represented by this node
+    uint64_t offset;                // offset of this entry on disk
+    // following are all offsets into the bptree_heap
+    uint32_t parent_directory;      // directory containing this file or directory
+    uint32_t next_fde;              // next file or directory in the same directory
+    uint32_t prev_fde;              // previous file or directory in the same directory
+    uint32_t first_directory_entry; // if this is a directory, offset of the bptree_node containing its first entry
+    uint32_t child_nodes[8];        // offset of child nodes in the bptree structure
 }
 PACKED;
-STATIC_ASSERT(sizeof(struct bptree_node) == 72);
+STATIC_ASSERT(sizeof(struct bptree_node) == 88);
 
 struct bptree_node * alloc_bptree_heap() {
-    // 4194304 entries, 302MB starting size
+    // 4194304 entries, 369MiB starting size
     struct bptree_node *bptree_heap = malloc(sizeof(struct bptree_node) * (1 << 22));
     memset(bptree_heap, '\0', sizeof(struct bptree_node));
     return bptree_heap;
