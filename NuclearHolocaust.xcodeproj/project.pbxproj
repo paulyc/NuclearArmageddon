@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		5F26840521F62D62007A8482 /* recovery.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F26840421F62D62007A8482 /* recovery.c */; };
 		5F26840621F62D62007A8482 /* recovery.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F26840421F62D62007A8482 /* recovery.c */; };
+		5F26840921F66D5B007A8482 /* bptree.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F26840821F66D5B007A8482 /* bptree.c */; };
+		5F26840A21F66D5B007A8482 /* bptree.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F26840821F66D5B007A8482 /* bptree.c */; };
 		5F40C12621E78FD800E6F309 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FAF0C5A21E729EC00C28BB7 /* main.c */; };
 		5F40C12721E78FE000E6F309 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04921D5CDEB007A8482 /* log.c */; };
 		5F40C12821E78FE300E6F309 /* node.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05B21D5CDEB007A8482 /* node.c */; };
@@ -59,6 +61,8 @@
 		5F0A0E8321EE8498007A8482 /* find_ac3.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = find_ac3.c; sourceTree = "<group>"; };
 		5F26840321F62D62007A8482 /* recovery.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recovery.h; sourceTree = "<group>"; };
 		5F26840421F62D62007A8482 /* recovery.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = recovery.c; sourceTree = "<group>"; };
+		5F26840721F66D5B007A8482 /* bptree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bptree.h; sourceTree = "<group>"; };
+		5F26840821F66D5B007A8482 /* bptree.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bptree.c; sourceTree = "<group>"; };
 		5F40C11F21E78F1000E6F309 /* denukify */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = denukify; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F6C031B21DDC638009F3609 /* nuked */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = nuked; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F99C03D21D5CDEB007A8482 /* dumpexfat.8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dumpexfat.8; sourceTree = "<group>"; };
@@ -211,6 +215,8 @@
 				5F99C05B21D5CDEB007A8482 /* node.c */,
 				5F26840321F62D62007A8482 /* recovery.h */,
 				5F26840421F62D62007A8482 /* recovery.c */,
+				5F26840721F66D5B007A8482 /* bptree.h */,
+				5F26840821F66D5B007A8482 /* bptree.c */,
 			);
 			path = libexfat;
 			sourceTree = "<group>";
@@ -394,6 +400,7 @@
 				5F40C12F21E78FEC00E6F309 /* mount.c in Sources */,
 				5F26840621F62D62007A8482 /* recovery.c in Sources */,
 				5F40C12D21E78FE800E6F309 /* utf.c in Sources */,
+				5F26840A21F66D5B007A8482 /* bptree.c in Sources */,
 				5F40C12621E78FD800E6F309 /* main.c in Sources */,
 				5F40C12E21E78FEC00E6F309 /* io.c in Sources */,
 				5F40C13021E78FEF00E6F309 /* lookup.c in Sources */,
@@ -413,6 +420,7 @@
 				5F6C032521DDC64C009F3609 /* io.c in Sources */,
 				5F26840521F62D62007A8482 /* recovery.c in Sources */,
 				5F6C032921DDC656009F3609 /* cluster.c in Sources */,
+				5F26840921F66D5B007A8482 /* bptree.c in Sources */,
 				5F6C032721DDC652009F3609 /* utils.c in Sources */,
 				5F6C032D21DDC663009F3609 /* main.c in Sources */,
 				5F6C032B21DDC65C009F3609 /* utf.c in Sources */,

@@ -30,6 +30,7 @@
 #endif
 #include "compiler.h"
 #include "exfatfs.h"
+#include "bptree.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

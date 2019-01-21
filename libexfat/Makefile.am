@@ -22,6 +22,7 @@
 
 noinst_LIBRARIES = libexfat.a
 libexfat_a_SOURCES = \
+	bptree.c \
 	byteorder.h \
 	cluster.c \
 	compiler.h \
