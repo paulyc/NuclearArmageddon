@@ -25,6 +25,7 @@
 
 #include "byteorder.h"
 #include "compiler.h"
+#include "recovery.h"
 
 typedef uint32_t cluster_t;		/* cluster number */
 

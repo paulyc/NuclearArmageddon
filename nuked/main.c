@@ -163,7 +163,7 @@ void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_
                 if (file_directory_entry->continuations >= 2 && file_directory_entry->continuations <= 18) { // does not include this entry itself. range 2-18
                     le16_t chksum = exfat_calc_checksum((const struct exfat_entry*)cluster_ptr, file_directory_entry->continuations + 1);
                     if (chksum.__u16 == file_directory_entry->checksum.__u16) {
-                        printf("FDE %016zx\n", cluster_ofs);
+                        printf(FDE_LOG_FMT, cluster_ofs);
                         subcount = file_directory_entry->continuations;
                         cluster_ptr += sizeof(struct exfat_entry);
                         continue;
@@ -212,13 +212,13 @@ void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_
                     for (int i = 0; i < ent->label.length; ++i) {
                         namebuf[i] = (char)(ent->label.name[i].__u16);
                     }
-                    printf("EFL %016zx %s\n", cluster_ofs, namebuf);
+                    printf(EFL_LOG_FMT, cluster_ofs, namebuf);
                     break;
                 }
                 case EXFAT_ENTRY_FILE_INFO:
                 {
                     dump_exfat_entry(ent, cluster_ofs);
-                    printf("EFI %016zx\n", cluster_ofs);
+                    printf(EFI_LOG_FMT, cluster_ofs);
                     break;
                 }
                 case EXFAT_ENTRY_FILE_NAME:
@@ -228,7 +228,7 @@ void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_
                     for (int i = 0; i < EXFAT_ENAME_MAX; ++i) {
                         namebuf[i] = (char)(ent->name.name[i].__u16);
                     }
-                    printf("EFN %016zx %s\n", cluster_ofs, namebuf);
+                    printf(EFN_LOG_FMT, cluster_ofs, namebuf);
                     break;
                 }
                 case EXFAT_ENTRY_FILE_TAIL:

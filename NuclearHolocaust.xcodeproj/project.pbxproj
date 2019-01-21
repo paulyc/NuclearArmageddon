@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5F26840521F62D62007A8482 /* recovery.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F26840421F62D62007A8482 /* recovery.c */; };
+		5F26840621F62D62007A8482 /* recovery.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F26840421F62D62007A8482 /* recovery.c */; };
 		5F40C12621E78FD800E6F309 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FAF0C5A21E729EC00C28BB7 /* main.c */; };
 		5F40C12721E78FE000E6F309 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04921D5CDEB007A8482 /* log.c */; };
 		5F40C12821E78FE300E6F309 /* node.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05B21D5CDEB007A8482 /* node.c */; };
@@ -55,6 +57,8 @@
 /* Begin PBXFileReference section */
 		5F0A0E8221EE8498007A8482 /* ac3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ac3.h; sourceTree = "<group>"; };
 		5F0A0E8321EE8498007A8482 /* find_ac3.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = find_ac3.c; sourceTree = "<group>"; };
+		5F26840321F62D62007A8482 /* recovery.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = recovery.h; sourceTree = "<group>"; };
+		5F26840421F62D62007A8482 /* recovery.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = recovery.c; sourceTree = "<group>"; };
 		5F40C11F21E78F1000E6F309 /* denukify */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = denukify; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F6C031B21DDC638009F3609 /* nuked */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = nuked; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F99C03D21D5CDEB007A8482 /* dumpexfat.8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dumpexfat.8; sourceTree = "<group>"; };
@@ -205,6 +209,8 @@
 				5F99C05721D5CDEB007A8482 /* utf.c */,
 				5F99C05A21D5CDEB007A8482 /* platform.h */,
 				5F99C05B21D5CDEB007A8482 /* node.c */,
+				5F26840321F62D62007A8482 /* recovery.h */,
+				5F26840421F62D62007A8482 /* recovery.c */,
 			);
 			path = libexfat;
 			sourceTree = "<group>";
@@ -386,6 +392,7 @@
 				5F40C12721E78FE000E6F309 /* log.c in Sources */,
 				5F40C12921E78FE800E6F309 /* utils.c in Sources */,
 				5F40C12F21E78FEC00E6F309 /* mount.c in Sources */,
+				5F26840621F62D62007A8482 /* recovery.c in Sources */,
 				5F40C12D21E78FE800E6F309 /* utf.c in Sources */,
 				5F40C12621E78FD800E6F309 /* main.c in Sources */,
 				5F40C12E21E78FEC00E6F309 /* io.c in Sources */,
@@ -404,6 +411,7 @@
 				5F6C032A21DDC659009F3609 /* repair.c in Sources */,
 				5F6C032321DDC642009F3609 /* log.c in Sources */,
 				5F6C032521DDC64C009F3609 /* io.c in Sources */,
+				5F26840521F62D62007A8482 /* recovery.c in Sources */,
 				5F6C032921DDC656009F3609 /* cluster.c in Sources */,
 				5F6C032721DDC652009F3609 /* utils.c in Sources */,
 				5F6C032D21DDC663009F3609 /* main.c in Sources */,
