@@ -28,6 +28,8 @@ libexfat_a_SOURCES = \
 	compiler.h \
 	exfat.h \
 	exfatfs.h \
+	fsrestore.cpp \
+	fstree.cpp \
 	io.c \
 	log.c \
 	lookup.c \
@@ -35,6 +37,7 @@ libexfat_a_SOURCES = \
 	node.c \
 	platform.h \
 	repair.c \
+	recovery.c \
 	time.c \
 	utf.c \
 	utils.c

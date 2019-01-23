@@ -33,6 +33,10 @@
 		5F6C032B21DDC65C009F3609 /* utf.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05721D5CDEB007A8482 /* utf.c */; };
 		5F6C032C21DDC65F009F3609 /* node.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05B21D5CDEB007A8482 /* node.c */; };
 		5F6C032D21DDC663009F3609 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C07F21D5CDEB007A8482 /* main.c */; };
+		5F8B50E021F92111007A8482 /* fstree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F8B50DE21F92111007A8482 /* fstree.cpp */; };
+		5F8B50E121F92111007A8482 /* fstree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F8B50DE21F92111007A8482 /* fstree.cpp */; };
+		5F8B50E421F92817007A8482 /* fsrestore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F8B50E221F92817007A8482 /* fsrestore.cpp */; };
+		5F8B50E521F92817007A8482 /* fsrestore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F8B50E221F92817007A8482 /* fsrestore.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -65,6 +69,10 @@
 		5F26840821F66D5B007A8482 /* bptree.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bptree.c; sourceTree = "<group>"; };
 		5F40C11F21E78F1000E6F309 /* denukify */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = denukify; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F6C031B21DDC638009F3609 /* nuked */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = nuked; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F8B50DE21F92111007A8482 /* fstree.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = fstree.cpp; sourceTree = "<group>"; };
+		5F8B50DF21F92111007A8482 /* fstree.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = fstree.hpp; sourceTree = "<group>"; };
+		5F8B50E221F92817007A8482 /* fsrestore.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = fsrestore.cpp; sourceTree = "<group>"; };
+		5F8B50E321F92817007A8482 /* fsrestore.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = fsrestore.h; sourceTree = "<group>"; };
 		5F99C03D21D5CDEB007A8482 /* dumpexfat.8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dumpexfat.8; sourceTree = "<group>"; };
 		5F99C03E21D5CDEB007A8482 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
 		5F99C03F21D5CDEB007A8482 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
@@ -146,22 +154,22 @@
 		5F2E2EEB21D5CB1C007A8482 = {
 			isa = PBXGroup;
 			children = (
-				5FAF0C5721E729EC00C28BB7 /* denukify */,
 				5F99C08121D5CE3F007A8482 /* Android.bp */,
 				5F99C08221D5CE3F007A8482 /* ChangeLog */,
 				5F99C08421D5CE3F007A8482 /* CMakeLists.txt */,
 				5F99C08021D5CE3F007A8482 /* configure.ac */,
 				5F99C08521D5CE3F007A8482 /* COPYING */,
-				5F99C08321D5CE3F007A8482 /* Makefile.am */,
-				5F99C08621D5CE40007A8482 /* README.md */,
+				5FAF0C5721E729EC00C28BB7 /* denukify */,
 				5F99C03C21D5CDEB007A8482 /* dump */,
 				5F99C07021D5CDEB007A8482 /* fsck */,
 				5F99C07621D5CDEB007A8482 /* fuse */,
 				5F99C04221D5CDEB007A8482 /* label */,
 				5F99C04821D5CDEB007A8482 /* libexfat */,
+				5F99C08321D5CE3F007A8482 /* Makefile.am */,
 				5F99C05C21D5CDEB007A8482 /* mkfs */,
 				5F99C07C21D5CDEB007A8482 /* nuked */,
 				5F6C031C21DDC638009F3609 /* Products */,
+				5F99C08621D5CE40007A8482 /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -197,26 +205,30 @@
 		5F99C04821D5CDEB007A8482 /* libexfat */ = {
 			isa = PBXGroup;
 			children = (
-				5F99C04921D5CDEB007A8482 /* log.c */,
-				5F99C04A21D5CDEB007A8482 /* exfatfs.h */,
-				5F99C04B21D5CDEB007A8482 /* lookup.c */,
-				5F99C04C21D5CDEB007A8482 /* compiler.h */,
-				5F99C04D21D5CDEB007A8482 /* byteorder.h */,
-				5F99C04E21D5CDEB007A8482 /* io.c */,
-				5F99C04F21D5CDEB007A8482 /* mount.c */,
-				5F99C05121D5CDEB007A8482 /* Makefile.am */,
-				5F99C05221D5CDEB007A8482 /* exfat.h */,
-				5F99C05321D5CDEB007A8482 /* utils.c */,
-				5F99C05421D5CDEB007A8482 /* time.c */,
-				5F99C05521D5CDEB007A8482 /* cluster.c */,
-				5F99C05621D5CDEB007A8482 /* repair.c */,
-				5F99C05721D5CDEB007A8482 /* utf.c */,
-				5F99C05A21D5CDEB007A8482 /* platform.h */,
-				5F99C05B21D5CDEB007A8482 /* node.c */,
-				5F26840321F62D62007A8482 /* recovery.h */,
-				5F26840421F62D62007A8482 /* recovery.c */,
-				5F26840721F66D5B007A8482 /* bptree.h */,
 				5F26840821F66D5B007A8482 /* bptree.c */,
+				5F26840721F66D5B007A8482 /* bptree.h */,
+				5F99C04D21D5CDEB007A8482 /* byteorder.h */,
+				5F99C05521D5CDEB007A8482 /* cluster.c */,
+				5F99C04C21D5CDEB007A8482 /* compiler.h */,
+				5F99C05221D5CDEB007A8482 /* exfat.h */,
+				5F99C04A21D5CDEB007A8482 /* exfatfs.h */,
+				5F8B50E221F92817007A8482 /* fsrestore.cpp */,
+				5F8B50E321F92817007A8482 /* fsrestore.h */,
+				5F8B50DE21F92111007A8482 /* fstree.cpp */,
+				5F8B50DF21F92111007A8482 /* fstree.hpp */,
+				5F99C04E21D5CDEB007A8482 /* io.c */,
+				5F99C04921D5CDEB007A8482 /* log.c */,
+				5F99C04B21D5CDEB007A8482 /* lookup.c */,
+				5F99C05121D5CDEB007A8482 /* Makefile.am */,
+				5F99C04F21D5CDEB007A8482 /* mount.c */,
+				5F99C05B21D5CDEB007A8482 /* node.c */,
+				5F99C05A21D5CDEB007A8482 /* platform.h */,
+				5F26840421F62D62007A8482 /* recovery.c */,
+				5F26840321F62D62007A8482 /* recovery.h */,
+				5F99C05621D5CDEB007A8482 /* repair.c */,
+				5F99C05421D5CDEB007A8482 /* time.c */,
+				5F99C05721D5CDEB007A8482 /* utf.c */,
+				5F99C05321D5CDEB007A8482 /* utils.c */,
 			);
 			path = libexfat;
 			sourceTree = "<group>";
@@ -224,23 +236,23 @@
 		5F99C05C21D5CDEB007A8482 /* mkfs */ = {
 			isa = PBXGroup;
 			children = (
-				5F99C05D21D5CDEB007A8482 /* mkexfat.h */,
-				5F99C05E21D5CDEB007A8482 /* uct.h */,
-				5F99C05F21D5CDEB007A8482 /* mkexfatfs.8 */,
-				5F99C06021D5CDEB007A8482 /* vbr.c */,
-				5F99C06121D5CDEB007A8482 /* uctc.h */,
 				5F99C06221D5CDEB007A8482 /* cbm.c */,
-				5F99C06321D5CDEB007A8482 /* rootdir.c */,
+				5F99C06A21D5CDEB007A8482 /* cbm.h */,
 				5F99C06421D5CDEB007A8482 /* fat.c */,
-				5F99C06521D5CDEB007A8482 /* uct.c */,
+				5F99C06F21D5CDEB007A8482 /* fat.h */,
+				5F99C06821D5CDEB007A8482 /* main.c */,
 				5F99C06621D5CDEB007A8482 /* Makefile.am */,
 				5F99C06721D5CDEB007A8482 /* mkexfat.c */,
-				5F99C06821D5CDEB007A8482 /* main.c */,
-				5F99C06921D5CDEB007A8482 /* vbr.h */,
-				5F99C06A21D5CDEB007A8482 /* cbm.h */,
-				5F99C06B21D5CDEB007A8482 /* uctc.c */,
+				5F99C05D21D5CDEB007A8482 /* mkexfat.h */,
+				5F99C05F21D5CDEB007A8482 /* mkexfatfs.8 */,
+				5F99C06321D5CDEB007A8482 /* rootdir.c */,
 				5F99C06E21D5CDEB007A8482 /* rootdir.h */,
-				5F99C06F21D5CDEB007A8482 /* fat.h */,
+				5F99C06521D5CDEB007A8482 /* uct.c */,
+				5F99C05E21D5CDEB007A8482 /* uct.h */,
+				5F99C06B21D5CDEB007A8482 /* uctc.c */,
+				5F99C06121D5CDEB007A8482 /* uctc.h */,
+				5F99C06021D5CDEB007A8482 /* vbr.c */,
+				5F99C06921D5CDEB007A8482 /* vbr.h */,
 			);
 			path = mkfs;
 			sourceTree = "<group>";
@@ -278,21 +290,13 @@
 		5FAF0C5721E729EC00C28BB7 /* denukify */ = {
 			isa = PBXGroup;
 			children = (
-				5FAF0C5821E729EC00C28BB7 /* denukify.8 */,
-				5FAF0C5921E729EC00C28BB7 /* Makefile.am */,
-				5FAF0C5A21E729EC00C28BB7 /* main.c */,
-				5FAF0C5B21E729EC00C28BB7 /* .deps */,
 				5F0A0E8221EE8498007A8482 /* ac3.h */,
+				5FAF0C5821E729EC00C28BB7 /* denukify.8 */,
 				5F0A0E8321EE8498007A8482 /* find_ac3.c */,
+				5FAF0C5A21E729EC00C28BB7 /* main.c */,
+				5FAF0C5921E729EC00C28BB7 /* Makefile.am */,
 			);
 			path = denukify;
-			sourceTree = "<group>";
-		};
-		5FAF0C5B21E729EC00C28BB7 /* .deps */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = .deps;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -398,12 +402,14 @@
 				5F40C12721E78FE000E6F309 /* log.c in Sources */,
 				5F40C12921E78FE800E6F309 /* utils.c in Sources */,
 				5F40C12F21E78FEC00E6F309 /* mount.c in Sources */,
+				5F8B50E521F92817007A8482 /* fsrestore.cpp in Sources */,
 				5F26840621F62D62007A8482 /* recovery.c in Sources */,
 				5F40C12D21E78FE800E6F309 /* utf.c in Sources */,
 				5F26840A21F66D5B007A8482 /* bptree.c in Sources */,
 				5F40C12621E78FD800E6F309 /* main.c in Sources */,
 				5F40C12E21E78FEC00E6F309 /* io.c in Sources */,
 				5F40C13021E78FEF00E6F309 /* lookup.c in Sources */,
+				5F8B50E121F92111007A8482 /* fstree.cpp in Sources */,
 				5F40C12821E78FE300E6F309 /* node.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -418,12 +424,14 @@
 				5F6C032A21DDC659009F3609 /* repair.c in Sources */,
 				5F6C032321DDC642009F3609 /* log.c in Sources */,
 				5F6C032521DDC64C009F3609 /* io.c in Sources */,
+				5F8B50E421F92817007A8482 /* fsrestore.cpp in Sources */,
 				5F26840521F62D62007A8482 /* recovery.c in Sources */,
 				5F6C032921DDC656009F3609 /* cluster.c in Sources */,
 				5F26840921F66D5B007A8482 /* bptree.c in Sources */,
 				5F6C032721DDC652009F3609 /* utils.c in Sources */,
 				5F6C032D21DDC663009F3609 /* main.c in Sources */,
 				5F6C032B21DDC65C009F3609 /* utf.c in Sources */,
+				5F8B50E021F92111007A8482 /* fstree.cpp in Sources */,
 				5F6C032421DDC649009F3609 /* lookup.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

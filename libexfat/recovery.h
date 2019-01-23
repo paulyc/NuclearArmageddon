@@ -24,10 +24,87 @@
 #define recovery_h
 
 #include <stdio.h>
+#include "exfatfs.h"
 
 #define FDE_LOG_FMT "FDE %016zx\n"
 #define EFL_LOG_FMT "EFL %016zx %s\n"
 #define EFI_LOG_FMT "EFI %016zx\n"
 #define EFN_LOG_FMT "EFN %016zx %s\n"
+
+#define SECTOR_SIZE_BYTES ((size_t)512)
+#define SECTORS_PER_CLUSTER ((size_t)512)
+#define CLUSTER_COUNT ((cluster_t)0xE8DB79)
+#define CLUSTER_COUNT_SECTORS (CLUSTER_COUNT * SECTORS_PER_CLUSTER)
+#define FAT_CLUSTER_COUNT (CLUSTER_COUNT - 2)
+#define CLUSTER_SIZE_BYTES (CLUSTER_COUNT_SECTORS * SECTOR_SIZE_BYTES)
+#define DISK_SIZE_BYTES ((size_t)0x000003a352944000)
+#define CLUSTER_HEAP_DISK_START_SECTOR ((size_t)0x8c400)
+#define CLUSTER_HEAP_PARTITION_START_SECTOR ((size_t)0x283D8)
+#define PARTITION_START_SECTOR ((size_t)0x64028)
+
+// rounded to sector boundary
+struct exfat_file_allocation_table
+{
+    cluster_t entries[CLUSTER_COUNT];
+    uint8_t padding[SECTOR_SIZE_BYTES - ((CLUSTER_COUNT<<2) % SECTOR_SIZE_BYTES)];
+}
+PACKED;
+STATIC_ASSERT(sizeof(struct exfat_file_allocation_table) == (CLUSTER_COUNT << 2) + SECTOR_SIZE_BYTES - ((CLUSTER_COUNT << 2) % SECTOR_SIZE_BYTES) && (sizeof(struct exfat_file_allocation_table) % SECTOR_SIZE_BYTES) == 0 );
+
+struct exfat_sector_t
+{
+    uint8_t data[SECTOR_SIZE_BYTES];
+}
+PACKED;
+STATIC_ASSERT(sizeof(struct exfat_sector_t) == SECTOR_SIZE_BYTES);
+
+struct exfat_cluster_t
+{
+    struct exfat_sector_t sectors[SECTORS_PER_CLUSTER];
+}
+PACKED;
+STATIC_ASSERT(sizeof(struct exfat_cluster_t) == SECTOR_SIZE_BYTES*SECTORS_PER_CLUSTER);
+
+//STATIC_ASSERT(sizeof(struct exfat_filesystem) == 1 + 24 + (0xE8DB79+2) );
+
+struct exfat;
+struct exfat_dev;
+
+void init_fat(struct exfat_file_allocation_table *fat);
+void update_chksum_sector(le32_t *chksum, const uint8_t *const buf, size_t len);
+void restore_fat(struct exfat_dev *dev);
+struct exfat_node* make_node(void);
+void free_node(struct exfat_node *node);
+void dump_exfat_entry(union exfat_entries_t *ent, size_t cluster_ofs);
+struct exfat_node* try_load_node_from_fde(struct exfat *fs, size_t fde_offset);
+void init_filesystem(struct exfat_dev *dev, struct exfat *fs);
+
+#define CLUSTER_HEAP_SIZE (BMAP_SIZE(FAT_CLUSTER_COUNT))
+#define CLUSTER_HEAP_SIZE_BYTES (CLUSTER_HEAP_SIZE * sizeof(bitmap_t))
+
+struct exfat_cluster_heap {
+    bitmap_t allocation_flags[CLUSTER_HEAP_SIZE];
+}
+PACKED;
+STATIC_ASSERT(sizeof(struct exfat_cluster_heap) == CLUSTER_HEAP_SIZE_BYTES);
+
+int init_cluster_heap(struct exfat_file_allocation_table *fat, struct exfat_cluster_heap *heap);
+
+struct exfat_upcase_table
+{
+    uint16_t upcase_entries[0xFFFF];
+}
+PACKED;
+STATIC_ASSERT(sizeof(struct exfat_upcase_table) == 0xFFFF * sizeof(uint16_t)); //0x1FFFE
+
+uint32_t upcase_checksum(const uint8_t *const data, size_t data_bytes);
+int init_upcase_table(struct exfat_file_allocation_table *fat, struct exfat_upcase_table *tbl);
+
+struct exfat_node_entry * init_directory(struct exfat_file_allocation_table *fat);
+void free_directory(struct exfat_node_entry *dir);
+
+int reconstruct(struct exfat_dev *dev, FILE *logfile);
+
+void dump_exfat_entry(union exfat_entries_t *ent, size_t cluster_ofs);
 
 #endif /* recovery_h */

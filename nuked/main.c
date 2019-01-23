@@ -47,95 +47,6 @@ static const size_t start_offset_sector = start_offset_bytes / sector_size_bytes
 // 0x458af40000 - 0x45796c0000 = 0x11880000 (start offset bytes) 0x8C400 (sector)
 // cluster 0 = byte offset 0x1181c000 = sector 0x8c0e0
 
-void dump_exfat_entry(union exfat_entries_t *ent, size_t cluster_ofs) {
-    switch (ent->ent.type) {
-        case EXFAT_ENTRY_FILE:
-        {
-
-//             struct exfat_entry_meta1            /* file or directory info (part 1) */
-//            {
-//                uint8_t type;                    /* EXFAT_ENTRY_FILE */
-//                uint8_t continuations;
-//                le16_t checksum;
-//                le16_t attrib;                    /* combination of EXFAT_ATTRIB_xxx */
-//                le16_t __unknown1;
-//                le16_t crtime, crdate;            /* creation date and time */
-//                le16_t mtime, mdate;            /* latest modification date and time */
-//                le16_t atime, adate;            /* latest access date and time */
-//                uint8_t crtime_cs;                /* creation time in cs (centiseconds) */
-//                uint8_t mtime_cs;                /* latest modification time in cs */
-//                uint8_t __unknown2[10];
-//            }
-            fprintf(stderr, "found EXFAT_ENTRY_FILE: struct exfat_entry_meta1 at %016zx\n", cluster_ofs);
-            fprintf(stderr, "type: %02x\n", ent->meta1.type);
-            fprintf(stderr, "continuations: %02x\n", ent->meta1.continuations);
-            fprintf(stderr, "checksum: %04x\n", ent->meta1.checksum.__u16);
-            break;
-        }
-        case EXFAT_ENTRY_BITMAP:
-        {
-            fprintf(stderr, "found EXFAT_ENTRY_BITMAP: struct exfat_entry_bitmap at %016zx\n", cluster_ofs);
-            fprintf(stderr, "type: %02x\n", ent->bitmap.type);
-            break;
-        }
-        case EXFAT_ENTRY_UPCASE:
-        {
-            fprintf(stderr, "found EXFAT_ENTRY_UPCASE: struct exfat_entry_upcase at %016zx\n", cluster_ofs);
-            fprintf(stderr, "type: %02x\n", ent->upcase.type);
-            break;
-        }
-        case EXFAT_ENTRY_LABEL:
-        {
-            fprintf(stderr, "found EXFAT_ENTRY_LABEL: struct exfat_entry_label at %016zx\n", cluster_ofs);
-            fprintf(stderr, "type: %02x\n", ent->label.type);
-            break;
-        }
-        case EXFAT_ENTRY_FILE_INFO:
-        {
-            fprintf(stderr, "found EXFAT_ENTRY_FILE_INFO: struct exfat_entry_meta2 at %016zx\n", cluster_ofs);
-            fprintf(stderr, "type: %02x\n", ent->meta2.type);
-            fprintf(stderr, "name_length: %d\n", ent->meta2.name_length);
-            fprintf(stderr, "size: %llu\n", ent->meta2.size.__u64);
-            fprintf(stderr, "valid_size: %llu\n", ent->meta2.valid_size.__u64);
-            fprintf(stderr, "start_cluster: %08x\n", ent->meta2.start_cluster.__u32);
-            fprintf(stderr, "flags: %08x\n", ent->meta2.flags);
-            if ((1 << 1) & ent->meta2.flags) {
-                fprintf(stderr, "(Contiguous file)\n");
-            } else {
-                /*if (1 & ent->meta2.flags) {
-
-                } else {
-
-                }*/
-                fprintf(stderr, "(Fragmented file)\n");
-            }
-            break;
-        }
-        case EXFAT_ENTRY_FILE_NAME:
-        {
-            fprintf(stderr, "found EXFAT_ENTRY_FILE_NAME: struct exfat_entry_name at %016zx\n", cluster_ofs);
-            fprintf(stderr, "type: %02x\n", ent->name.type);
-            break;
-        }
-        case EXFAT_ENTRY_FILE_TAIL:
-        {
-            fprintf(stderr, "found EXFAT_ENTRY_FILE_TAIL at %016zx\n", cluster_ofs);
-            break;
-        }
-        default:
-        {
-            fprintf(stderr, "found default %02x at %016zx\n", ent->ent.type, cluster_ofs);
-            break;
-        }
-    }
-}
-
-void verify_checksum(uint8_t *cluster_ptr, size_t cluster_ofs) {
-    do {
-        ;
-    } while (0);
-}
-
 void cluster_search_file_directory_entries(uint8_t *cluster_buf, size_t cluster_size, size_t cluster_ofs_begin) {
     //fprintf(stderr, "cluster_search_file_directory_entries 0x%016zx, 0x%08zx\n", cluster_ofs_begin, cluster_size);
     uint8_t *cluster_ptr = cluster_buf, *cluster_end = cluster_buf + cluster_size;
@@ -271,7 +182,7 @@ int log_dir_entries(struct exfat_dev *dev) {
     return 0;
 }
 
-int reconstruct(struct exfat_dev *dev) {
+static int scan(struct exfat_dev *dev) {
 	// run through every cluster, check for directories, write to log
 
     int ret = log_dir_entries(dev);
@@ -319,7 +230,7 @@ int main(int argc, char* argv[])
 	fprintf(stderr, "Reconstructing nuked file system on %s.\n", spec);
     dev = exfat_open(spec, EXFAT_MODE_RO);
     if (dev != NULL) {
-        ret = reconstruct(dev);
+        ret = scan(dev);
         if (ret != 0) {
 			fprintf(stderr, "reconstruct() returned error: %s\n", strerror(ret));
             return ret;

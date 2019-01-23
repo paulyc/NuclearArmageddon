@@ -20,6 +20,7 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -121,8 +122,8 @@ void insert_bptree_node(struct bptree *bptree,
 
                  } else*/
                 if (height >= bptree->max_height) {
-                    uint8_t heap_offset_height;
-                    uint32_t heap_offset_level_offset;
+                    uint8_t heap_offset_height = height;
+                    uint32_t heap_offset_level_offset = level_offset;
 
                     // try to pivot the tree, find the next empty node and move the parent and all following nodes over
                     while (bptree->heap[++heap_offset].offset != 0) {

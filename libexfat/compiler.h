@@ -24,8 +24,12 @@
 #ifndef COMPILER_H_INCLUDED
 #define COMPILER_H_INCLUDED
 
+#ifndef __cplusplus
+
 #if __STDC_VERSION__ < 199901L
 #error C99-compliant compiler is required
+#endif
+
 #endif
 
 #if defined(__clang__)

@@ -25,7 +25,36 @@
 
 #include "byteorder.h"
 #include "compiler.h"
-#include "recovery.h"
+
+#define EXFAT_NAME_MAX 255
+/* UTF-16 encodes code points up to U+FFFF as single 16-bit code units.
+ UTF-8 uses up to 3 bytes (i.e. 8-bit code units) to encode code points
+ up to U+FFFF. One additional character is for null terminator. */
+#define EXFAT_UTF8_NAME_BUFFER_MAX (EXFAT_NAME_MAX * 3 + 1)
+#define EXFAT_UTF8_ENAME_BUFFER_MAX (EXFAT_ENAME_MAX * 3 + 1)
+
+#define SECTOR_SIZE(sb) (1 << (sb).sector_bits)
+#define CLUSTER_SIZE(sb) (SECTOR_SIZE(sb) << (sb).spc_bits)
+#define CLUSTER_INVALID(sb, c) ((c) < EXFAT_FIRST_DATA_CLUSTER || \
+(c) - EXFAT_FIRST_DATA_CLUSTER >= le32_to_cpu((sb).cluster_count))
+
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define DIV_ROUND_UP(x, d) (((x) + (d) - 1) / (d))
+#define ROUND_UP(x, d) (DIV_ROUND_UP(x, d) * (d))
+
+#define BMAP_SIZE(count) (ROUND_UP(count, sizeof(bitmap_t) * 8) / 8)
+#define BMAP_BLOCK(index) ((index) / sizeof(bitmap_t) / 8)
+#define BMAP_MASK(index) ((bitmap_t) 1 << ((index) % (sizeof(bitmap_t) * 8)))
+#define BMAP_GET(bitmap, index) \
+((bitmap)[BMAP_BLOCK(index)] & BMAP_MASK(index))
+#define BMAP_SET(bitmap, index) \
+((bitmap)[BMAP_BLOCK(index)] |= BMAP_MASK(index))
+#define BMAP_CLR(bitmap, index) \
+((bitmap)[BMAP_BLOCK(index)] &= ~BMAP_MASK(index))
+
+#define EXFAT_REPAIR(hook, ef, ...) \
+(exfat_ask_to_fix(ef) && exfat_fix_ ## hook(ef, __VA_ARGS__))
 
 typedef uint32_t cluster_t;		/* cluster number */
 
