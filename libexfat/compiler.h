@@ -24,12 +24,18 @@
 #ifndef COMPILER_H_INCLUDED
 #define COMPILER_H_INCLUDED
 
-#ifndef __cplusplus
+#ifdef __cplusplus
+
+// TODO fix these for C++
+#define STATIC_ASSERT(x)
+#define PACKED
+#define PRINTF
+#define NORETURN
+
+#else
 
 #if __STDC_VERSION__ < 199901L
 #error C99-compliant compiler is required
-#endif
-
 #endif
 
 #if defined(__clang__)
@@ -66,5 +72,7 @@
 #define STATIC_ASSERT(cond) \
 	extern void CONCAT1(static_assert, __LINE__)(int x[(cond) ? 1 : -1])
 #endif
+
+#endif /* __cplusplus */
 
 #endif /* ifndef COMPILER_H_INCLUDED */

@@ -20,8 +20,8 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
 
-#ifndef fsrestore_hpp
-#define fsrestore_hpp
+#ifndef fsrestore_h
+#define fsrestore_h
 
 #include <stdio.h>
 
@@ -29,13 +29,15 @@
 extern "C" {
 #endif
 
+typedef void* exfat_filesystem_t;
+
 /* Public C API */
-struct ExFATFilesystem;
-typedef struct ExFATFilesystem* exfat_filesystem_t;
 exfat_filesystem_t reconstruct_filesystem_from_scan_logfile(const char *logfilename);
 void write_fs_reconstruct_journal(exfat_filesystem_t fs, int fd);
 void reconstruct_live_fs(exfat_filesystem_t fs, int fd);
 void free_filesystem(exfat_filesystem_t fs);
+
+#include "recovery.h"
 
 #ifdef __cplusplus
 }
@@ -50,8 +52,8 @@ void free_filesystem(exfat_filesystem_t fs);
 #include <set>
 #include <string>
 
-#include "recovery.h"
 #include "fstree.hpp"
+
 
 class ExFATFilesystem
 {
@@ -81,40 +83,39 @@ private:
         .name = { 'E', 'l', 'e', 'm', 'e', 'n', 't', 's', 0, 0, 0, 0, 0, 0, 0 },   //le16_t name[EXFAT_ENAME_MAX]; /* in UTF-16LE */
     };
 
-
     static constexpr struct exfat_volume_boot_record VBR = {
         .sb = {
             //    uint8_t jump[3];                /* 0x00 jmp and nop instructions */
-            .jump = { 0xEB, 0x76, 0x90 },
+            .jump = {0xEB, 0x76, 0x90},
             //    uint8_t oem_name[8];            /* 0x03 "EXFAT   " */
-            .oem_name = { 'E', 'X', 'F', 'A', 'T', ' ', ' ', ' ' },
+            .oem_name = {'E', 'X', 'F', 'A', 'T', ' ', ' ', ' '},
             //    uint8_t    __unused1[53];            /* 0x0B always 0 */
-            .__unused1 = { 0 },
+            .__unused1 = {0},
             //    le64_t sector_start;            /* 0x40 partition first sector */
-            .sector_start = PARTITION_START_SECTOR,        // 409640
+            .sector_start = {PARTITION_START_SECTOR},        // 409640
             //    le64_t sector_count;            /* 0x48 partition sectors count */
-            .sector_count = 0x1D1B977B7,     // 7813560247
+            .sector_count = {0x1D1B977B7},     // 7813560247
             //    le32_t fat_sector_start;        /* 0x50 FAT first sector */
-            .fat_sector_start = 0,
+            .fat_sector_start = {0},
             //    le32_t fat_sector_count;        /* 0x54 FAT sectors count */
-            .fat_sector_count = 0,
+            .fat_sector_count = {0},
             //    le32_t cluster_sector_start;    /* 0x58 first cluster sector */
-            .cluster_sector_start = CLUSTER_HEAP_PARTITION_START_SECTOR,
+            .cluster_sector_start = {CLUSTER_HEAP_PARTITION_START_SECTOR},
             //    le32_t cluster_count;            /* 0x5C total clusters count */
-            .cluster_count = FAT_CLUSTER_COUNT,
+            .cluster_count = {FAT_CLUSTER_COUNT},
             //    le32_t rootdir_cluster;            /* 0x60 first cluster of the root dir */
-            .rootdir_cluster = 0,
+            .rootdir_cluster = {0},
             //    le32_t volume_serial;            /* 0x64 volume serial number */
-            .volume_serial = 0xdeadbeef,
+            .volume_serial = {0xdeadbeef},
             //    struct                            /* 0x68 FS version */
             //    {
             //        uint8_t minor;
             //        uint8_t major;
             //    }
             //    version;
-            .version = { 0, 1 },
+            .version = {0, 1},
             //    le16_t volume_state;            /* 0x6A volume state flags */
-            .volume_state = 0,
+            .volume_state = {0},
             //    uint8_t sector_bits;            /* 0x6C sector size as (1 << n) */
             .sector_bits = 9,
             //    uint8_t spc_bits;                /* 0x6D sectors per cluster as (1 << n) */
@@ -126,15 +127,18 @@ private:
             //    uint8_t allocated_percent;        /* 0x70 percentage of allocated space */
             .allocated_percent = 100,
             //    uint8_t __unused2[397];            /* 0x71 always 0 */
-            .__unused2 = 0,
+            .__unused2 = {0},
             //    le16_t boot_signature;            /* the value of 0xAA55 */
-            .boot_signature = 0xAA55,
+            .boot_signature = {0xAA55},
         },
         .bpb = { {
-            .mebs = { { { 0 }, 0xAA55 } },
+            .mebs = { {
+                {0},        //uint8_t zero[510];
+                {0xAA55}    //le16_t boot_signature;
+            } },
             .oem_params = { {0}, 0, 0, 0, 0, 0, 0, 0, 0, {0} },
-            .zs = { { 0 } },
-            .chksum = { 0 },
+            .zs = { {0} },
+            .chksum = {0},
         } },
     };
 
@@ -142,12 +146,12 @@ private:
     {
         .type = EXFAT_ENTRY_BITMAP,                    /* EXFAT_ENTRY_BITMAP */
         .bitmap_flags = 0,            /* bit 0: 0 = 1st cluster heap. 1 = 2nd cluster heap. */
-        .__unknown1 = { 0 },
-        .start_cluster = 2,
-        .size = (FAT_CLUSTER_COUNT) / 8 + (FAT_CLUSTER_COUNT) % 8 /* in bytes = Ceil (Cluster count / 8 ) */
+        .__unknown1 = {0},
+        .start_cluster = {2},
+        .size = {(FAT_CLUSTER_COUNT) / 8 + (FAT_CLUSTER_COUNT) % 8} /* in bytes = Ceil (Cluster count / 8 ) */
     };
 };
 
 #endif
 
-#endif /* fsrestore_hpp */
+#endif /* fsrestore_h */

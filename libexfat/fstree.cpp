@@ -20,9 +20,12 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
 
+#include "exfat.h"
 #include "fstree.hpp"
 
-ExFATDirectoryTree::ExFATDirectoryTree(uint64_t root_directory_offset) {
+ExFATDirectoryTree::ExFATDirectoryTree(struct exfat *fs, uint64_t root_directory_offset) :
+    _filesystem(fs)
+{
 
 }
 

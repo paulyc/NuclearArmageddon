@@ -29,9 +29,9 @@ ExFATFilesystem::ExFATFilesystem(uint64_t filesystem_offset) :
 	_bmp_entry(BMP_ENTRY)
 {
     init_fat(&_fat);
-    init_cluster_heap(&_fat, &_heap, &_bmp_entry);
+    init_cluster_heap(&_fat, &_heap, &BMP_ENTRY);
     init_upcase_table(&_fat, &_upcase);
-    _directory_tree = std::make_unique<ExFATDirectoryTree>(0);
+    _directory_tree = std::make_unique<ExFATDirectoryTree>(nullptr, 0);
 }
 
 ExFATFilesystem::~ExFATFilesystem() {

@@ -24,10 +24,6 @@
 #ifndef EXFAT_H_INCLUDED
 #define EXFAT_H_INCLUDED
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef ANDROID
 /* Android.bp is used instead of autotools when targeting Android */
 #include "config.h"
@@ -217,9 +213,5 @@ bool exfat_fix_invalid_node_checksum(const struct exfat* ef,
 		struct exfat_node* node);
 bool exfat_fix_unknown_entry(struct exfat* ef, struct exfat_node* dir,
 		const struct exfat_entry* entry, off_t offset);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* ifndef EXFAT_H_INCLUDED */

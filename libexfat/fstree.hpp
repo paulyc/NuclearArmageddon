@@ -25,7 +25,9 @@
 
 #ifdef __cplusplus
 
+extern "C" {
 #include "exfatfs.h"
+}
 
 #include <stdio.h>
 
@@ -36,10 +38,12 @@
 #include <set>
 #include <string>
 
+struct exfat;
+
 class ExFATDirectoryTree
 {
 public:
-    ExFATDirectoryTree(uint64_t root_directory_offset);
+    ExFATDirectoryTree(struct exfat *fs, uint64_t root_directory_offset);
     virtual ~ExFATDirectoryTree();
 
     void addNode(uint64_t fde_offset);
@@ -47,28 +51,47 @@ public:
     void reconstructLive(int fd);
 
 private:
-    struct TreeNode
-    {
-        TreeNode() : node_offset(0) {}
-        virtual ~TreeNode() {}
+    class Directory;
+    class File;
 
-        uint64_t node_offset;
-        struct exfat_node_entry entry;
-        std::shared_ptr<TreeNode> parent;
-        std::string name; // utf-8
-
-        bool is_fragmented() const { return EXFAT_FLAG_CONTIGUOUS & entry.efi.flags; }
-    };
-    struct DirectoryNode : public TreeNode
+    class Node
     {
-        std::set<std::shared_ptr<TreeNode>> children;
+    public:
+        Node();
+        Node(uint64_t node_offset, struct exfat_node_entry &entry);
+        virtual ~Node();
+
+        bool loadFromFDE(uint64_t fde_offset);
+
+        struct exfat_node_entry &getNodeEntry() { return _entry; }
+
+        bool isFragmented() const { return EXFAT_FLAG_CONTIGUOUS & _entry.efi.flags; }
+    private:
+        uint64_t _node_offset;
+        struct exfat_node_entry _entry;
+        std::shared_ptr<Directory> _parent;
+        std::string _name; // utf-8
+        size_t _size;
     };
-    struct FileNode : public TreeNode
+    class Directory : public Node
     {
+    public:
+        Directory(uint64_t node_offset, struct exfat_node_entry &entry);
+
+        void addChild(std::shared_ptr<Node> child);
+    private:
+        std::set<std::shared_ptr<Node>> _children;
+    };
+    class File : public Node
+    {
+    public:
+        File(uint64_t node_offset, struct exfat_node_entry &entry);
+    private:
     };
 
-    DirectoryNode _root_directory;
-    std::unordered_map<uint64_t, std::shared_ptr<TreeNode>> _node_offset_map;
+    struct exfat *_filesystem;
+    std::shared_ptr<Directory> _root_directory;
+    std::unordered_map<uint64_t, std::shared_ptr<Node>> _node_offset_map;
 };
 
 #endif /* __cplusplus */

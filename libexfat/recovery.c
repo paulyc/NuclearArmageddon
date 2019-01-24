@@ -171,7 +171,7 @@ void init_filesystem(struct exfat_dev *dev, struct exfat *fs, struct exfat_volum
 
 int init_cluster_heap(struct exfat_file_allocation_table *fat,
                       struct exfat_cluster_heap *heap,
-                      struct exfat_entry_bitmap *bmp_entry) {
+                      const struct exfat_entry_bitmap *const bmp_entry) {
     // mark everything allocated so we don't accidentally overwrite any data
     memset(heap, 0xFF, sizeof(struct exfat_cluster_heap));
 
@@ -294,13 +294,21 @@ int reconstruct(struct exfat_dev *dev, FILE *logfile) {
     struct bptree bptree;
     struct exfat_entry_meta2 root_directory; // TODO initialize
     size_t root_directory_offset = 0; // TODO initialize
+    struct exfat_entry_bitmap bmp_entry =            /* allocated clusters bitmap */
+    {
+        .type = EXFAT_ENTRY_BITMAP,                    /* EXFAT_ENTRY_BITMAP */
+        .bitmap_flags = 0,            /* bit 0: 0 = 1st cluster heap. 1 = 2nd cluster heap. */
+        .__unknown1 = {0},
+        .start_cluster = {2},
+        .size = {(FAT_CLUSTER_COUNT) / 8 + (FAT_CLUSTER_COUNT) % 8} /* in bytes = Ceil (Cluster count / 8 ) */
+    };
 
     init_filesystem(dev, &fs, &vbr);
     //fs->root    = make_node();
     //bptree_heap[0]
 
     init_fat(&fat);
-    int ret = init_cluster_heap(&fat, &heap, &vbr);
+    int ret = init_cluster_heap(&fat, &heap, &bmp_entry);
     if (ret != 0) {
         return ret;
 

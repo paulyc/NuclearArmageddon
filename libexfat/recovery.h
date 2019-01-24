@@ -24,6 +24,7 @@
 #define recovery_h
 
 #include <stdio.h>
+
 #include "exfatfs.h"
 
 #define FDE_LOG_FMT "FDE %016zx\n"
@@ -90,7 +91,7 @@ STATIC_ASSERT(sizeof(struct exfat_cluster_heap) == CLUSTER_HEAP_SIZE_BYTES);
 
 int init_cluster_heap(struct exfat_file_allocation_table *fat,
                       struct exfat_cluster_heap *heap,
-                      struct exfat_entry_bitmap *bmp_entry);
+                      const struct exfat_entry_bitmap *const bmp_entry);
 
 struct exfat_upcase_table
 {
