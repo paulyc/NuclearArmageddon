@@ -22,7 +22,7 @@
 
 #include "fstree.hpp"
 
-ExFATDirectoryTree::ExFATDirectoryTree(uint64_t root_directory_offset, std::string root_directory_name) {
+ExFATDirectoryTree::ExFATDirectoryTree(uint64_t root_directory_offset) {
 
 }
 

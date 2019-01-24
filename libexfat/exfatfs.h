@@ -99,12 +99,12 @@ PACKED;
 STATIC_ASSERT(sizeof(struct exfat_super_block) == 512);
 
 // Main Extended Boot Region - 8 sectors, generally not used
-struct mebr_sector_t {
+struct mebr_sector {
     uint8_t zero[510];
     le16_t boot_signature;
 }
 PACKED;
-STATIC_ASSERT(sizeof(struct mebr_sector_t) == 512);
+STATIC_ASSERT(sizeof(struct mebr_sector) == 512);
 
 // The Main Extended Boot Region takes up the next 8 sectors, even when not used.
 //static struct mebr_sector_t zero_mebs = { { 0 }, 0xAA55 };
@@ -118,7 +118,7 @@ STATIC_ASSERT(sizeof(struct mebr_sector_t) == 512);
 // so the specification states that all 10 entries should be searched. This sector is filled out by
 // the media manufacturer at the factory and a format operation is not supposed to erase this sector
 // with the exception of a secure wipe of the media.
-struct oem_parameters_t
+struct oem_parameters
 {
     le32_t OemParameterType[4]; //GUID. Value is OEM_FLASH_PARAMETER_GUID
     le32_t EraseBlockSize; //Erase block size in bytes
@@ -132,39 +132,39 @@ struct oem_parameters_t
     uint8_t Padding[464];
 }
 PACKED;
-STATIC_ASSERT(sizeof(struct oem_parameters_t) == 512);
+STATIC_ASSERT(sizeof(struct oem_parameters) == 512);
 
 //static struct oem_parameters_t zero_params = { {0}, 0, 0, 0, 0, 0, 0, 0, 0, {0} };
 
-struct zero_sector_t {
+struct zero_sector {
     uint8_t zero[512];
 }
 PACKED;
-STATIC_ASSERT(sizeof(struct zero_sector_t) == 512);
+STATIC_ASSERT(sizeof(struct zero_sector) == 512);
 
 //static struct zero_sector_t zero_sector = {0};
 
-struct chksum_sector_t {
+struct chksum_sector {
     le32_t chksum[128];
 }
 PACKED;
-STATIC_ASSERT(sizeof(struct chksum_sector_t) == 512);
+STATIC_ASSERT(sizeof(struct chksum_sector) == 512);
 
-struct exfat_bios_parameter_block_t {
-    struct mebr_sector_t mebs[8];
-    struct oem_parameters_t oem_params;
-    struct zero_sector_t zs[2];
-    struct chksum_sector_t chksum;
+struct exfat_bios_parameter_block {
+    struct mebr_sector mebs[8];
+    struct oem_parameters oem_params;
+    struct zero_sector zs[2];
+    struct chksum_sector chksum;
 }
 PACKED;
-STATIC_ASSERT(sizeof(struct exfat_bios_parameter_block_t) == 12*512);
+STATIC_ASSERT(sizeof(struct exfat_bios_parameter_block) == 12*512);
 
-struct exfat_volume_boot_record_t {
+struct exfat_volume_boot_record {
 	struct exfat_super_block sb;
-    struct exfat_bios_parameter_block_t bpb[2]; // one copy and a backup
+    struct exfat_bios_parameter_block bpb[2]; // one copy and a backup
 }
 PACKED;
-STATIC_ASSERT(sizeof(struct exfat_volume_boot_record_t) == 25*512);
+STATIC_ASSERT(sizeof(struct exfat_volume_boot_record) == 25*512);
 
 #define EXFAT_ENTRY_VALID     0x80
 #define EXFAT_ENTRY_CONTINUED 0x40

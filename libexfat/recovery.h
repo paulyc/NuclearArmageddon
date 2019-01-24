@@ -51,19 +51,19 @@ struct exfat_file_allocation_table
 PACKED;
 STATIC_ASSERT(sizeof(struct exfat_file_allocation_table) == (CLUSTER_COUNT << 2) + SECTOR_SIZE_BYTES - ((CLUSTER_COUNT << 2) % SECTOR_SIZE_BYTES) && (sizeof(struct exfat_file_allocation_table) % SECTOR_SIZE_BYTES) == 0 );
 
-struct exfat_sector_t
+struct exfat_sector
 {
     uint8_t data[SECTOR_SIZE_BYTES];
 }
 PACKED;
-STATIC_ASSERT(sizeof(struct exfat_sector_t) == SECTOR_SIZE_BYTES);
+STATIC_ASSERT(sizeof(struct exfat_sector) == SECTOR_SIZE_BYTES);
 
-struct exfat_cluster_t
+struct exfat_cluster
 {
-    struct exfat_sector_t sectors[SECTORS_PER_CLUSTER];
+    struct exfat_sector sectors[SECTORS_PER_CLUSTER];
 }
 PACKED;
-STATIC_ASSERT(sizeof(struct exfat_cluster_t) == SECTOR_SIZE_BYTES*SECTORS_PER_CLUSTER);
+STATIC_ASSERT(sizeof(struct exfat_cluster) == SECTOR_SIZE_BYTES*SECTORS_PER_CLUSTER);
 
 //STATIC_ASSERT(sizeof(struct exfat_filesystem) == 1 + 24 + (0xE8DB79+2) );
 
@@ -72,12 +72,12 @@ struct exfat_dev;
 
 void init_fat(struct exfat_file_allocation_table *fat);
 void update_chksum_sector(le32_t *chksum, const uint8_t *const buf, size_t len);
-void restore_fat(struct exfat_dev *dev);
+void restore_fat(struct exfat_dev *dev, struct exfat_volume_boot_record *vbr);
 struct exfat_node* make_node(void);
 void free_node(struct exfat_node *node);
 void dump_exfat_entry(union exfat_entries_t *ent, size_t cluster_ofs);
 struct exfat_node* try_load_node_from_fde(struct exfat *fs, size_t fde_offset);
-void init_filesystem(struct exfat_dev *dev, struct exfat *fs);
+void init_filesystem(struct exfat_dev *dev, struct exfat *fs, struct exfat_volume_boot_record *vbr);
 
 #define CLUSTER_HEAP_SIZE (BMAP_SIZE(FAT_CLUSTER_COUNT))
 #define CLUSTER_HEAP_SIZE_BYTES (CLUSTER_HEAP_SIZE * sizeof(bitmap_t))
@@ -88,7 +88,9 @@ struct exfat_cluster_heap {
 PACKED;
 STATIC_ASSERT(sizeof(struct exfat_cluster_heap) == CLUSTER_HEAP_SIZE_BYTES);
 
-int init_cluster_heap(struct exfat_file_allocation_table *fat, struct exfat_cluster_heap *heap);
+int init_cluster_heap(struct exfat_file_allocation_table *fat,
+                      struct exfat_cluster_heap *heap,
+                      struct exfat_entry_bitmap *bmp_entry);
 
 struct exfat_upcase_table
 {

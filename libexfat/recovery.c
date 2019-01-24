@@ -35,13 +35,6 @@ static const size_t cluster_heap_partition_start_sector = CLUSTER_HEAP_PARTITION
 static const size_t partition_start_sector = PARTITION_START_SECTOR;
 static const size_t cluster_count = CLUSTER_COUNT;
 
-struct exfat_entry_label volume_label =        /* volume label */
-{
-    .type = EXFAT_ENTRY_LABEL,                                                 //uint8_t type; /* EXFAT_ENTRY_LABEL */
-    .length = 8,                                                               //uint8_t length; /* number of characters */
-    .name = { 'E', 'l', 'e', 'm', 'e', 'n', 't', 's', 0, 0, 0, 0, 0, 0, 0 },   //le16_t name[EXFAT_ENAME_MAX]; /* in UTF-16LE */
-};
-
 void init_fat(struct exfat_file_allocation_table *fat) {
     //const size_t sectors = sizeof(struct exfat_file_allocation_table) / SECTOR_SIZE_BYTES;
     fat->entries[0] = 0x0FFFFFF8; // Media descriptor hard drive
@@ -53,62 +46,6 @@ void init_fat(struct exfat_file_allocation_table *fat) {
         fat->entries[c] = EXFAT_CLUSTER_FREE;
     }
 }
-
-struct exfat_volume_boot_record_t vbr = {
-    .sb = {
-        //    uint8_t jump[3];                /* 0x00 jmp and nop instructions */
-        .jump = { 0xEB, 0x76, 0x90 },
-        //    uint8_t oem_name[8];            /* 0x03 "EXFAT   " */
-        .oem_name = { 'E', 'X', 'F', 'A', 'T', ' ', ' ', ' ' },
-        //    uint8_t    __unused1[53];            /* 0x0B always 0 */
-        .__unused1 = { 0 },
-        //    le64_t sector_start;            /* 0x40 partition first sector */
-        .sector_start = PARTITION_START_SECTOR,        // 409640
-        //    le64_t sector_count;            /* 0x48 partition sectors count */
-        .sector_count = 0x1D1B977B7,     // 7813560247
-        //    le32_t fat_sector_start;        /* 0x50 FAT first sector */
-        .fat_sector_start = 0,
-        //    le32_t fat_sector_count;        /* 0x54 FAT sectors count */
-        .fat_sector_count = 0,
-        //    le32_t cluster_sector_start;    /* 0x58 first cluster sector */
-        .cluster_sector_start = CLUSTER_HEAP_PARTITION_START_SECTOR,
-        //    le32_t cluster_count;            /* 0x5C total clusters count */
-        .cluster_count = FAT_CLUSTER_COUNT,
-        //    le32_t rootdir_cluster;            /* 0x60 first cluster of the root dir */
-        .rootdir_cluster = 0,
-        //    le32_t volume_serial;            /* 0x64 volume serial number */
-        .volume_serial = 0xdeadbeef,
-        //    struct                            /* 0x68 FS version */
-        //    {
-        //        uint8_t minor;
-        //        uint8_t major;
-        //    }
-        //    version;
-        .version = { 0, 1 },
-        //    le16_t volume_state;            /* 0x6A volume state flags */
-        .volume_state = 0,
-        //    uint8_t sector_bits;            /* 0x6C sector size as (1 << n) */
-        .sector_bits = 9,
-        //    uint8_t spc_bits;                /* 0x6D sectors per cluster as (1 << n) */
-        .spc_bits = 9,
-        //    uint8_t fat_count;                /* 0x6E always 1 */
-        .fat_count = 1,
-        //    uint8_t drive_no;                /* 0x6F always 0x80 */
-        .drive_no = 0x80,
-        //    uint8_t allocated_percent;        /* 0x70 percentage of allocated space */
-        .allocated_percent = 100,
-        //    uint8_t __unused2[397];            /* 0x71 always 0 */
-        .__unused2 = 0,
-        //    le16_t boot_signature;            /* the value of 0xAA55 */
-        .boot_signature = 0xAA55,
-    },
-    .bpb = { {
-        .mebs = { { { 0 }, 0xAA55 } },
-        .oem_params = { {0}, 0, 0, 0, 0, 0, 0, 0, 0, {0} },
-        .zs = { { 0 } },
-        .chksum = { 0 },
-    } },
-};
 
 // Sector 10 is reserved, and is not currently defined.
 // Sector 11 is a checksum sector, where every 4 byte integer is a 32 bit repeating checksum value
@@ -127,14 +64,14 @@ void update_chksum_sector(le32_t *chksum, const uint8_t *const buf, size_t len)
     }
 }
 
-void restore_fat(struct exfat_dev *dev) {
+void restore_fat(struct exfat_dev *dev, struct exfat_volume_boot_record *vbr) {
     //exfat_seek(dev, 0, SEEK_SET);
     //exfat_write(dev, &sb, sizeof(struct exfat_super_block)); // 0
-    update_chksum_sector(vbr.bpb[0].chksum.chksum, (const uint8_t *const)&vbr.sb, sizeof(struct exfat_super_block));
+    update_chksum_sector(vbr->bpb[0].chksum.chksum, (const uint8_t *const)&vbr->sb, sizeof(struct exfat_super_block));
     for (int i = 0; i < 8; ++i) {
-        //exfat_write(dev, &zero_mebs, sizeof(struct mebr_sector_t)); // 1-8
+        //exfat_write(dev, &zero_mebs, sizeof(struct mebr_sector)); // 1-8
         //memcpy(vbr.mebs[i], )
-        update_chksum_sector(vbr.bpb[0].chksum.chksum, (const uint8_t *const)&vbr.bpb[0].mebs[i], sizeof(struct mebr_sector_t));
+        update_chksum_sector(vbr->bpb[0].chksum.chksum, (const uint8_t *const)&vbr->bpb[0].mebs[i], sizeof(struct mebr_sector));
     }
     //exfat_write(dev, zero_sector, sizeof(zero_sector)); // 9
     //exfat_write(dev, zero_sector, sizeof(zero_sector)); // 10
@@ -224,30 +161,23 @@ struct exfat_node* try_load_node_from_fde(struct exfat *fs, size_t fde_offset) {
     return NULL;
 }
 
-void init_filesystem(struct exfat_dev *dev, struct exfat *fs) {
+void init_filesystem(struct exfat_dev *dev, struct exfat *fs, struct exfat_volume_boot_record *vbr) {
     fs->dev = dev;
     //fs->upcase =
-    fs->sb    = &vbr.sb;
+    fs->sb    = &vbr->sb;
 
     fs->repair = EXFAT_REPAIR_NO;
 }
 
-struct exfat_entry_bitmap bmp_entry =            /* allocated clusters bitmap */
-{
-    .type = EXFAT_ENTRY_BITMAP,                    /* EXFAT_ENTRY_BITMAP */
-    .bitmap_flags = 0,            /* bit 0: 0 = 1st cluster heap. 1 = 2nd cluster heap. */
-    .__unknown1 = { 0 },
-    .start_cluster = 2,
-    .size = (FAT_CLUSTER_COUNT) / 8 + (FAT_CLUSTER_COUNT) % 8 /* in bytes = Ceil (Cluster count / 8 ) */
-};
-
-int init_cluster_heap(struct exfat_file_allocation_table *fat, struct exfat_cluster_heap *heap) {
+int init_cluster_heap(struct exfat_file_allocation_table *fat,
+                      struct exfat_cluster_heap *heap,
+                      struct exfat_entry_bitmap *bmp_entry) {
     // mark everything allocated so we don't accidentally overwrite any data
     memset(heap, 0xFF, sizeof(struct exfat_cluster_heap));
 
     const size_t bmp_size_clusters =
-    bmp_entry.size.__u64 / cluster_size_bytes +
-    bmp_entry.size.__u64 % cluster_size_bytes;
+        bmp_entry->size.__u64 / cluster_size_bytes +
+        bmp_entry->size.__u64 % cluster_size_bytes;
     cluster_t c = 2;
     for (size_t i = 1; i < bmp_size_clusters; ++i) {
         cluster_t next = find_next_free_cluster(fat);
@@ -357,6 +287,7 @@ void free_directory(struct exfat_node_entry *dir) {
 
 int reconstruct(struct exfat_dev *dev, FILE *logfile) {
     struct exfat fs;
+    struct exfat_volume_boot_record vbr; //TODO Needs to be initialized
     struct exfat_file_allocation_table fat;
     struct exfat_cluster_heap heap;
     struct exfat_upcase_table upcase;
@@ -364,12 +295,12 @@ int reconstruct(struct exfat_dev *dev, FILE *logfile) {
     struct exfat_entry_meta2 root_directory; // TODO initialize
     size_t root_directory_offset = 0; // TODO initialize
 
-    init_filesystem(dev, &fs);
+    init_filesystem(dev, &fs, &vbr);
     //fs->root    = make_node();
     //bptree_heap[0]
 
     init_fat(&fat);
-    int ret = init_cluster_heap(&fat, &heap);
+    int ret = init_cluster_heap(&fat, &heap, &vbr);
     if (ret != 0) {
         return ret;
 

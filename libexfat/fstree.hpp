@@ -39,7 +39,7 @@
 class ExFATDirectoryTree
 {
 public:
-    ExFATDirectoryTree(uint64_t root_directory_offset, std::string root_directory_name);
+    ExFATDirectoryTree(uint64_t root_directory_offset);
     virtual ~ExFATDirectoryTree();
 
     void addNode(uint64_t fde_offset);

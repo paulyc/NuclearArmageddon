@@ -22,8 +22,16 @@
 
 #include "fsrestore.h"
 
-ExFATFilesystem::ExFATFilesystem(uint64_t filesystem_offset) { // from start of partition or disk
-
+ExFATFilesystem::ExFATFilesystem(uint64_t filesystem_offset) :
+	_fs_offset(filesystem_offset), // from start of partition or disk
+	_volume_label(VOLUME_LABEL),
+	_vbr(VBR),
+	_bmp_entry(BMP_ENTRY)
+{
+    init_fat(&_fat);
+    init_cluster_heap(&_fat, &_heap, &_bmp_entry);
+    init_upcase_table(&_fat, &_upcase);
+    _directory_tree = std::make_unique<ExFATDirectoryTree>(0);
 }
 
 ExFATFilesystem::~ExFATFilesystem() {
