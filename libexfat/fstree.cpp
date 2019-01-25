@@ -24,26 +24,18 @@
 #include "fstree.hpp"
 #include "fsexcept.hpp"
 
-ExFATDirectoryTree::ExFATDirectoryTree(struct exfat *fs, off_t root_directory_offset) :
-    _filesystem(fs)
+ExFATDirectoryTree::ExFATDirectoryTree(off_t root_directory_offset)
 {
-
+    struct exfat_node_entry entry;
+    _root_directory = std::make_shared<RootDirectory>(root_directory_offset, entry);
 }
 
 ExFATDirectoryTree::~ExFATDirectoryTree() {
 
 }
 
-void ExFATDirectoryTree::addNode(struct exfat_dev *dev, off_t fde_offset) throw() {
-    struct exfat_node_entry entry;
+void ExFATDirectoryTree::addNode(off_t fde_offset, struct exfat_node_entry &entry) throw() {
 
-    ssize_t rd = exfat_pread(dev, &entry, sizeof(entry), fde_offset);
-    if (rd == sizeof(entry)) {
-    } else if (rd == 0) {
-        return;
-    } else if (rd == -1) {
-        throw LIBC_EXCEPTION;
-    }
 }
 
 void ExFATDirectoryTree::writeRepairJournal(int fd) throw() {

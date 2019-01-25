@@ -31,63 +31,77 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <cstring>
 
 struct exfat;
 
 class ExFATDirectoryTree
 {
 public:
-    ExFATDirectoryTree(struct exfat *fs, off_t root_directory_offset);
+    ExFATDirectoryTree(off_t root_directory_offset);
     virtual ~ExFATDirectoryTree();
 
-    void addNode(struct exfat_dev *dev, off_t fde_offset) throw();
+    void addNode(off_t fde_offset, struct exfat_node_entry &entry) throw();
     void writeRepairJournal(int fd) throw();
     void reconstructLive(int fd) throw();
 
 private:
+    class Node;
     class Directory;
+    class RootDirectory;
     class File;
+
+    std::shared_ptr<RootDirectory> _root_directory;
+    std::unordered_map<off_t, std::shared_ptr<Node>> _node_offset_map;
 
     class Node
     {
     public:
         Node() {}
+        Node(std::shared_ptr<Directory> &parent) : _parent(parent) {}
         virtual ~Node() {}
 
-        virtual bool loadFromFDE(struct exfat_dev *dev, off_t fde_offset);
+        virtual bool loadFromFDE(off_t fde_offset, struct exfat_node_entry &entry) throw();
 
         struct exfat_node_entry &getNodeEntry() { return _entry; }
         bool isFragmented() const { return EXFAT_FLAG_CONTIGUOUS & _entry.efi.flags; }
+        size_t getSize() const { return _entry.efi.size.__u64; }
+    protected:
+        Node(off_t offset, struct exfat_node_entry &entry) : _node_offset(offset), _entry(entry) {}
     private:
         off_t _node_offset;
         struct exfat_node_entry _entry;
         std::shared_ptr<Directory> _parent;
         std::string _name; // utf-8
-        size_t _size;
     };
 
     class Directory : public Node
     {
     public:
         Directory() {}
+        Directory(std::shared_ptr<Directory> &parent) : Node(parent) {}
         virtual ~Directory() {}
 
-        void addChild(std::shared_ptr<Node> child);
+        void addChild(std::shared_ptr<Node> child) noexcept;
+    protected:
+        Directory(off_t offset, struct exfat_node_entry &entry) : Node(offset, entry) {}
     private:
         std::set<std::shared_ptr<Node>> _children;
+    };
+
+    class RootDirectory : public Directory
+    {
+    public:
+        RootDirectory(off_t offset, struct exfat_node_entry &entry) : Directory(offset, entry) {}
     };
 
     class File : public Node
     {
     public:
-        File() {}
+        File(std::shared_ptr<Directory> &parent) : Node(parent) {}
         virtual ~File() {}
     private:
     };
-
-    struct exfat *_filesystem;
-    std::shared_ptr<Directory> _root_directory;
-    std::unordered_map<off_t, std::shared_ptr<Node>> _node_offset_map;
 };
 
 #endif /* fstree_hpp */

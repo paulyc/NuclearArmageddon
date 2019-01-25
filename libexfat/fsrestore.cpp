@@ -33,7 +33,7 @@ ExFATFilesystem::ExFATFilesystem() :
     init_fat(&_fat);
     init_cluster_heap(&_fat, &_heap, &BMP_ENTRY);
     init_upcase_table(&_fat, &_upcase);
-    _directory_tree = std::make_unique<ExFATDirectoryTree>(nullptr, 0);
+    _directory_tree = std::make_unique<ExFATDirectoryTree>(0);
 }
 
 ExFATFilesystem::~ExFATFilesystem() {
@@ -52,7 +52,15 @@ void ExFATFilesystem::openFilesystem(std::string device_path, off_t filesystem_o
 }
 
 void ExFATFilesystem::rebuildFromScanLogfile(std::string filename) {
-
+#if 0
+    ssize_t rd = exfat_pread(&_filesystem.dev, &entry, sizeof(entry), fde_offset);
+    if (rd == sizeof(entry)) {
+    } else if (rd == 0) {
+        return;
+    } else if (rd == -1) {
+        throw LIBC_EXCEPTION;
+    }
+#endif
 }
 
 void ExFATFilesystem::writeRestoreJournal(int fd) {
