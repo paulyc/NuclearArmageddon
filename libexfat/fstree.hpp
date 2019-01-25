@@ -23,13 +23,7 @@
 #ifndef fstree_hpp
 #define fstree_hpp
 
-#ifdef __cplusplus
-
-extern "C" {
-#include "exfatfs.h"
-}
-
-#include <stdio.h>
+#include "exfat.h"
 
 #include <iostream>
 #include <map>
@@ -93,7 +87,5 @@ private:
     std::shared_ptr<Directory> _root_directory;
     std::unordered_map<uint64_t, std::shared_ptr<Node>> _node_offset_map;
 };
-
-#endif /* __cplusplus */
 
 #endif /* fstree_hpp */
