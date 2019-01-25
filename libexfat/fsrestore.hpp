@@ -29,23 +29,28 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <exception>
+#include <cerrno>
+#include <cstring>
 
 #include "fstree.hpp"
 
 class ExFATFilesystem
 {
 public:
-    ExFATFilesystem(uint64_t filesystem_offset); // from start of partition or disk
+    ExFATFilesystem(); // from start of partition or disk
     virtual ~ExFATFilesystem();
 
+    void openFilesystem(std::string device_path, off_t filesystem_offset, bool rw) throw();
     void rebuildFromScanLogfile(std::string filename);
     void writeRestoreJournal(int fd);
     void reconstructLive(int fd);
 private:
-    uint64_t _fs_offset;
+    std::string _device_path;
 
     std::unique_ptr<ExFATDirectoryTree> _directory_tree;
 
+    struct exfat _filesystem;
     struct exfat_file_allocation_table _fat;
     struct exfat_cluster_heap _heap;
     struct exfat_upcase_table _upcase;

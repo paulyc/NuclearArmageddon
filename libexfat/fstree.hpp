@@ -37,12 +37,12 @@ struct exfat;
 class ExFATDirectoryTree
 {
 public:
-    ExFATDirectoryTree(struct exfat *fs, uint64_t root_directory_offset);
+    ExFATDirectoryTree(struct exfat *fs, off_t root_directory_offset);
     virtual ~ExFATDirectoryTree();
 
-    void addNode(uint64_t fde_offset);
-    void writeRepairJournal(int fd);
-    void reconstructLive(int fd);
+    void addNode(struct exfat_dev *dev, off_t fde_offset) throw();
+    void writeRepairJournal(int fd) throw();
+    void reconstructLive(int fd) throw();
 
 private:
     class Directory;
@@ -51,41 +51,43 @@ private:
     class Node
     {
     public:
-        Node();
-        Node(uint64_t node_offset, struct exfat_node_entry &entry);
-        virtual ~Node();
+        Node() {}
+        virtual ~Node() {}
 
-        bool loadFromFDE(uint64_t fde_offset);
+        virtual bool loadFromFDE(struct exfat_dev *dev, off_t fde_offset);
 
         struct exfat_node_entry &getNodeEntry() { return _entry; }
-
         bool isFragmented() const { return EXFAT_FLAG_CONTIGUOUS & _entry.efi.flags; }
     private:
-        uint64_t _node_offset;
+        off_t _node_offset;
         struct exfat_node_entry _entry;
         std::shared_ptr<Directory> _parent;
         std::string _name; // utf-8
         size_t _size;
     };
+
     class Directory : public Node
     {
     public:
-        Directory(uint64_t node_offset, struct exfat_node_entry &entry);
+        Directory() {}
+        virtual ~Directory() {}
 
         void addChild(std::shared_ptr<Node> child);
     private:
         std::set<std::shared_ptr<Node>> _children;
     };
+
     class File : public Node
     {
     public:
-        File(uint64_t node_offset, struct exfat_node_entry &entry);
+        File() {}
+        virtual ~File() {}
     private:
     };
 
     struct exfat *_filesystem;
     std::shared_ptr<Directory> _root_directory;
-    std::unordered_map<uint64_t, std::shared_ptr<Node>> _node_offset_map;
+    std::unordered_map<off_t, std::shared_ptr<Node>> _node_offset_map;
 };
 
 #endif /* fstree_hpp */

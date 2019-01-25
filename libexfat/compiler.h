@@ -24,6 +24,10 @@
 #ifndef COMPILER_H_INCLUDED
 #define COMPILER_H_INCLUDED
 
+#define X(x) #x
+#define STRINGIFY(x) X(x)
+#define FILELINE __FILE__ ":" STRINGIFY(__LINE__)
+
 #ifdef __cplusplus
 
 // TODO fix these for C++

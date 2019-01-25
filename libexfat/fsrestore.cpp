@@ -22,13 +22,14 @@
 
 #include "fsrestore.hpp"
 #include "fsrestore.h"
+#include "fsexcept.hpp"
 
-ExFATFilesystem::ExFATFilesystem(uint64_t filesystem_offset) :
-	_fs_offset(filesystem_offset), // from start of partition or disk
+ExFATFilesystem::ExFATFilesystem() :
 	_volume_label(VOLUME_LABEL),
 	_vbr(VBR),
 	_bmp_entry(BMP_ENTRY)
 {
+    _filesystem.dev = nullptr;
     init_fat(&_fat);
     init_cluster_heap(&_fat, &_heap, &BMP_ENTRY);
     init_upcase_table(&_fat, &_upcase);
@@ -36,7 +37,18 @@ ExFATFilesystem::ExFATFilesystem(uint64_t filesystem_offset) :
 }
 
 ExFATFilesystem::~ExFATFilesystem() {
+    if (_filesystem.dev != nullptr) {
+        exfat_close(_filesystem.dev);
+    }
+}
 
+void ExFATFilesystem::openFilesystem(std::string device_path, off_t filesystem_offset, bool rw) throw() {
+    _filesystem.dev = exfat_open(device_path.c_str(), rw ? EXFAT_MODE_RW : EXFAT_MODE_RO);
+    if (_filesystem.dev != nullptr) {
+        //_fs_offset = filesystem_offset;
+    } else {
+        throw LIBC_EXCEPTION;
+    }
 }
 
 void ExFATFilesystem::rebuildFromScanLogfile(std::string filename) {

@@ -22,8 +22,9 @@
 
 #include "exfat.h"
 #include "fstree.hpp"
+#include "fsexcept.hpp"
 
-ExFATDirectoryTree::ExFATDirectoryTree(struct exfat *fs, uint64_t root_directory_offset) :
+ExFATDirectoryTree::ExFATDirectoryTree(struct exfat *fs, off_t root_directory_offset) :
     _filesystem(fs)
 {
 
@@ -33,14 +34,22 @@ ExFATDirectoryTree::~ExFATDirectoryTree() {
 
 }
 
-void ExFATDirectoryTree::addNode(uint64_t fde_offset) {
+void ExFATDirectoryTree::addNode(struct exfat_dev *dev, off_t fde_offset) throw() {
+    struct exfat_node_entry entry;
 
+    ssize_t rd = exfat_pread(dev, &entry, sizeof(entry), fde_offset);
+    if (rd == sizeof(entry)) {
+    } else if (rd == 0) {
+        return;
+    } else if (rd == -1) {
+        throw LIBC_EXCEPTION;
+    }
 }
 
-void ExFATDirectoryTree::writeRepairJournal(int fd) {
+void ExFATDirectoryTree::writeRepairJournal(int fd) throw() {
     
 }
 
-void ExFATDirectoryTree::reconstructLive(int fd) {
+void ExFATDirectoryTree::reconstructLive(int fd) throw() {
     
 }
