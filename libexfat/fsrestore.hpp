@@ -34,18 +34,23 @@
 #include <cstring>
 
 #include "fstree.hpp"
+#include "fsexcept.hpp"
 
 class ExFATFilesystem
 {
 public:
-    ExFATFilesystem(); // from start of partition or disk
+    ExFATFilesystem();
     virtual ~ExFATFilesystem();
 
-    void openFilesystem(std::string device_path, off_t filesystem_offset, bool rw) throw();
-    void rebuildFromScanLogfile(std::string filename);
+    void openFilesystem(std::string device_path, off_t filesystem_offset, bool rw) throw(); // from start of partition or disk
+    void rebuildFromScanLogfile(std::string filename) throw();
     void writeRestoreJournal(int fd);
     void reconstructLive(int fd);
+
 private:
+    void _processLine(std::string &line, std::istringstream &iss, size_t line_no) throw();
+    void _processFileDirectoryEntry(size_t disk_offset) throw();
+
     std::string _device_path;
 
     std::unique_ptr<ExFATDirectoryTree> _directory_tree;

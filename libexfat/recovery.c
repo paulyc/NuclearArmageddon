@@ -125,16 +125,19 @@ void free_node(struct exfat_node *node) {
 }
 
 struct exfat_node* try_load_node_from_fde(struct exfat *fs, size_t fde_offset) {
+// dont think im even using this
+#if 0
     struct exfat_node *node = make_node();
     do {
         struct exfat_node_entry node_entry;
-        ssize_t res = exfat_seek(fs->dev, fde_offset, SEEK_SET);
+        ssize_t rd = exfat_pread(&_filesystem.dev, &node_entry, sizeof(node_entry), fde_offset);
+        /*ssize_t res = exfat_seek(fs->dev, fde_offset, SEEK_SET);
         size_t to_read = 3*sizeof(node_entry.efi);
         res = exfat_read(fs->dev, &node_entry, to_read);
         if (res != to_read) { break; }
         const int continuations_left = node_entry.fde.continuations - 3;
         to_read = continuations_left*sizeof(union exfat_entries_t);
-        res = exfat_read(fs->dev, node_entry.u_continuations, to_read);
+        res = exfat_read(fs->dev, node_entry.u_continuations, to_read);*/
         if (res != to_read) { break; }
 
         // verify checksum
@@ -152,12 +155,13 @@ struct exfat_node* try_load_node_from_fde(struct exfat *fs, size_t fde_offset) {
             break;
         }
 
-        // todo
+        //todo
 
         return node;
     } while(0);
     //fail:
     free_node(node);
+#endif
     return NULL;
 }
 

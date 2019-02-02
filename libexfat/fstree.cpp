@@ -24,6 +24,8 @@
 #include "fstree.hpp"
 #include "fsexcept.hpp"
 
+#include <iomanip>
+
 ExFATDirectoryTree::ExFATDirectoryTree(off_t root_directory_offset)
 {
     struct exfat_node_entry entry;
@@ -35,7 +37,26 @@ ExFATDirectoryTree::~ExFATDirectoryTree() {
 }
 
 void ExFATDirectoryTree::addNode(off_t fde_offset, struct exfat_node_entry &entry) throw() {
+    // verify checksum
+    const uint8_t continuations = entry.fde.continuations;
+    if (continuations < 2 || continuations > 18) {
+        exfat_exception except;
+        except << "bad number of continuations " << continuations;
+        throw except;
+    }
 
+    le16_t chksum = exfat_calc_checksum((const struct exfat_entry*)&entry, continuations + 1);
+
+    if (chksum.__u16 != entry.fde.checksum.__u16) {
+        exfat_exception except;
+        except << "bad checksum " << std::hex << std::setw(4) << chksum.__u16 << " vs. " << entry.fde.checksum.__u16;
+        throw except;
+    }
+
+    if (entry.fde.attrib.__u16 & EXFAT_ATTRIB_DIR) { // this is a directory
+        //a
+    } else { // going to assume it is a file
+    }
 }
 
 void ExFATDirectoryTree::writeRepairJournal(int fd) throw() {

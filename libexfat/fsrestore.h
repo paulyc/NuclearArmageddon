@@ -30,7 +30,7 @@ extern "C" {
 typedef void* exfat_filesystem_t;
 
 /* Public C API */
-exfat_filesystem_t reconstruct_filesystem_from_scan_logfile(const char *logfilename);
+exfat_filesystem_t reconstruct_filesystem_from_scan_logfile(const char *fsdev, const char *logfilename);
 void write_fs_reconstruct_journal(exfat_filesystem_t fs, int fd);
 void reconstruct_live_fs(exfat_filesystem_t fs, int fd);
 void free_filesystem(exfat_filesystem_t fs);

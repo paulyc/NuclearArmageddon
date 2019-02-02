@@ -33,6 +33,8 @@
 #include <string>
 #include <cstring>
 
+#include "fsexcept.hpp"
+
 struct exfat;
 
 class ExFATDirectoryTree
