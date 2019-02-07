@@ -29,7 +29,7 @@ AC_INIT([Free exFAT implementation],
 AM_INIT_AUTOMAKE([1.11.2 -Wall -Werror foreign subdir-objects])
 AC_PROG_CC
 AC_PROG_CC_C99
-CXXFLAGS="$CXXFLAGS -std=c++14"
+CXXFLAGS="$CXXFLAGS -std=c++17"
 AC_PROG_CXX
 AC_PROG_RANLIB
 AM_PROG_AR

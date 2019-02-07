@@ -23,6 +23,6 @@
 
 sbin_PROGRAMS = denukify
 dist_man8_MANS = denukify.8
-denukify_SOURCES = main.c
+denukify_SOURCES = main.cpp
 denukify_CPPFLAGS = -I$(top_srcdir)/libexfat
 denukify_LDADD = ../libexfat/libexfat.a

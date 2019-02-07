@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
     }
     if (argc - optind != 2)
         usage(argv[0]);
-    spec = argv[optind];
+    spec = argv[optind++];
     fprintf(stderr, "Reconstructing nuked file system on %s.\n", spec);
     dev = exfat_open(spec, EXFAT_MODE_RW);
 
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
             break;
         }
 
-        spec = argv[optind+1];
+        spec = argv[optind];
         logfile = fopen(spec, "r");
         if (logfile == NULL) {
             ret = errno;
@@ -81,11 +81,15 @@ int main(int argc, char* argv[])
             break;
         }
 
-        ret = reconstruct(dev, logfile);
+        /*ret = reconstruct(dev, logfile);
         if (ret != 0) {
             fprintf(stderr, "reconstruct() returned error: %s\n", strerror(ret));
-        }
+        }*/
     } while (0);
+
+    io::github::paulyc::ExFATFilesystem fs;
+    fs.openFilesystem("/dev/disk2", start_offset_bytes, false);
+    fs.restoreFilesFromScanLogFile(".dts", "/Users/paulyc/recovery");
 
     exfat_close(dev);
     fclose(logfile);

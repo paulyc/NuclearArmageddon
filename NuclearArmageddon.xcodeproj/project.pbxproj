@@ -7,36 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5F26840521F62D62007A8482 /* recovery.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F26840421F62D62007A8482 /* recovery.c */; };
-		5F26840621F62D62007A8482 /* recovery.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F26840421F62D62007A8482 /* recovery.c */; };
-		5F26840921F66D5B007A8482 /* bptree.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F26840821F66D5B007A8482 /* bptree.c */; };
-		5F26840A21F66D5B007A8482 /* bptree.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F26840821F66D5B007A8482 /* bptree.c */; };
-		5F40C12621E78FD800E6F309 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FAF0C5A21E729EC00C28BB7 /* main.c */; };
-		5F40C12721E78FE000E6F309 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04921D5CDEB007A8482 /* log.c */; };
-		5F40C12821E78FE300E6F309 /* node.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05B21D5CDEB007A8482 /* node.c */; };
-		5F40C12921E78FE800E6F309 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05321D5CDEB007A8482 /* utils.c */; };
-		5F40C12A21E78FE800E6F309 /* time.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05421D5CDEB007A8482 /* time.c */; };
-		5F40C12B21E78FE800E6F309 /* cluster.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05521D5CDEB007A8482 /* cluster.c */; };
-		5F40C12C21E78FE800E6F309 /* repair.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05621D5CDEB007A8482 /* repair.c */; };
-		5F40C12D21E78FE800E6F309 /* utf.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05721D5CDEB007A8482 /* utf.c */; };
-		5F40C12E21E78FEC00E6F309 /* io.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04E21D5CDEB007A8482 /* io.c */; };
-		5F40C12F21E78FEC00E6F309 /* mount.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04F21D5CDEB007A8482 /* mount.c */; };
-		5F40C13021E78FEF00E6F309 /* lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04B21D5CDEB007A8482 /* lookup.c */; };
-		5F6C032321DDC642009F3609 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04921D5CDEB007A8482 /* log.c */; };
-		5F6C032421DDC649009F3609 /* lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04B21D5CDEB007A8482 /* lookup.c */; };
-		5F6C032521DDC64C009F3609 /* io.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04E21D5CDEB007A8482 /* io.c */; };
-		5F6C032621DDC64E009F3609 /* mount.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04F21D5CDEB007A8482 /* mount.c */; };
-		5F6C032721DDC652009F3609 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05321D5CDEB007A8482 /* utils.c */; };
-		5F6C032821DDC654009F3609 /* time.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05421D5CDEB007A8482 /* time.c */; };
-		5F6C032921DDC656009F3609 /* cluster.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05521D5CDEB007A8482 /* cluster.c */; };
-		5F6C032A21DDC659009F3609 /* repair.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05621D5CDEB007A8482 /* repair.c */; };
-		5F6C032B21DDC65C009F3609 /* utf.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05721D5CDEB007A8482 /* utf.c */; };
-		5F6C032C21DDC65F009F3609 /* node.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05B21D5CDEB007A8482 /* node.c */; };
+		5F40C12621E78FD800E6F309 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5FAF0C5A21E729EC00C28BB7 /* main.cpp */; };
 		5F6C032D21DDC663009F3609 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C07F21D5CDEB007A8482 /* main.c */; };
-		5F8B50E021F92111007A8482 /* fstree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F8B50DE21F92111007A8482 /* fstree.cpp */; };
-		5F8B50E121F92111007A8482 /* fstree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F8B50DE21F92111007A8482 /* fstree.cpp */; };
-		5F8B50E421F92817007A8482 /* fsrestore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F8B50E221F92817007A8482 /* fsrestore.cpp */; };
-		5F8B50E521F92817007A8482 /* fsrestore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F8B50E221F92817007A8482 /* fsrestore.cpp */; };
+		5F7F9B2E220CC1B7007A8482 /* bptree.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F26840821F66D5B007A8482 /* bptree.c */; };
+		5F7F9B2F220CC1BB007A8482 /* cluster.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05521D5CDEB007A8482 /* cluster.c */; };
+		5F7F9B30220CC1D1007A8482 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05321D5CDEB007A8482 /* utils.c */; };
+		5F7F9B31220CC1D6007A8482 /* utf.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05721D5CDEB007A8482 /* utf.c */; };
+		5F7F9B32220CC1DB007A8482 /* time.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05421D5CDEB007A8482 /* time.c */; };
+		5F7F9B33220CC1DF007A8482 /* repair.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05621D5CDEB007A8482 /* repair.c */; };
+		5F7F9B34220CC1E2007A8482 /* recovery.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F26840321F62D62007A8482 /* recovery.h */; };
+		5F7F9B35220CC1E5007A8482 /* recovery.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F26840421F62D62007A8482 /* recovery.c */; };
+		5F7F9B36220CC1EA007A8482 /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F99C05A21D5CDEB007A8482 /* platform.h */; };
+		5F7F9B37220CC1EE007A8482 /* node.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05B21D5CDEB007A8482 /* node.c */; };
+		5F7F9B38220CC1F2007A8482 /* mount.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04F21D5CDEB007A8482 /* mount.c */; };
+		5F7F9B39220CC1F6007A8482 /* lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04B21D5CDEB007A8482 /* lookup.c */; };
+		5F7F9B3A220CC200007A8482 /* fstree.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5F8B50DF21F92111007A8482 /* fstree.hpp */; };
+		5F7F9B3B220CC202007A8482 /* io.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04E21D5CDEB007A8482 /* io.c */; };
+		5F7F9B3C220CC206007A8482 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04921D5CDEB007A8482 /* log.c */; };
+		5F7F9B3E220CC210007A8482 /* bptree.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F26840721F66D5B007A8482 /* bptree.h */; };
+		5F7F9B3F220CC212007A8482 /* byteorder.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F99C04D21D5CDEB007A8482 /* byteorder.h */; };
+		5F7F9B40220CC216007A8482 /* compiler.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F99C04C21D5CDEB007A8482 /* compiler.h */; };
+		5F7F9B41220CC21A007A8482 /* exfat.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F99C05221D5CDEB007A8482 /* exfat.h */; };
+		5F7F9B42220CC21C007A8482 /* exfatfs.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F99C04A21D5CDEB007A8482 /* exfatfs.h */; };
+		5F7F9B43220CC21E007A8482 /* fsrestore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F8B50E221F92817007A8482 /* fsrestore.cpp */; };
+		5F7F9B44220CC221007A8482 /* fsrestore.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F8B50E321F92817007A8482 /* fsrestore.h */; };
+		5F7F9B45220CC224007A8482 /* fstree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F8B50DE21F92111007A8482 /* fstree.cpp */; };
+		5F7F9B47220CC28B007A8482 /* libexfat.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7F9B23220CC18E007A8482 /* libexfat.dylib */; };
+		5F7F9B48220CC290007A8482 /* libexfat.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7F9B23220CC18E007A8482 /* libexfat.dylib */; };
+		5F953AD4220CDE8D007A8482 /* fsrestore.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5F953AD3220CDE8D007A8482 /* fsrestore.hpp */; };
+		5F953AD7220CE06C007A8482 /* fsconfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F953AD6220CE06B007A8482 /* fsconfig.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -69,10 +68,13 @@
 		5F26840821F66D5B007A8482 /* bptree.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bptree.c; sourceTree = "<group>"; };
 		5F40C11F21E78F1000E6F309 /* denukify */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = denukify; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F6C031B21DDC638009F3609 /* nuked */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = nuked; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F7F9B23220CC18E007A8482 /* libexfat.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libexfat.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F8B50DE21F92111007A8482 /* fstree.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = fstree.cpp; sourceTree = "<group>"; };
 		5F8B50DF21F92111007A8482 /* fstree.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = fstree.hpp; sourceTree = "<group>"; };
 		5F8B50E221F92817007A8482 /* fsrestore.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = fsrestore.cpp; sourceTree = "<group>"; };
 		5F8B50E321F92817007A8482 /* fsrestore.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = fsrestore.h; sourceTree = "<group>"; };
+		5F953AD3220CDE8D007A8482 /* fsrestore.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = fsrestore.hpp; sourceTree = "<group>"; };
+		5F953AD6220CE06B007A8482 /* fsconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fsconfig.h; sourceTree = "<group>"; };
 		5F99C03D21D5CDEB007A8482 /* dumpexfat.8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dumpexfat.8; sourceTree = "<group>"; };
 		5F99C03E21D5CDEB007A8482 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
 		5F99C03F21D5CDEB007A8482 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
@@ -130,7 +132,7 @@
 		5F99C08621D5CE40007A8482 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5FAF0C5821E729EC00C28BB7 /* denukify.8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = denukify.8; sourceTree = "<group>"; };
 		5FAF0C5921E729EC00C28BB7 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
-		5FAF0C5A21E729EC00C28BB7 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		5FAF0C5A21E729EC00C28BB7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,10 +140,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F7F9B47220CC28B007A8482 /* libexfat.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		5F6C031821DDC638009F3609 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F7F9B48220CC290007A8482 /* libexfat.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5F7F9B21220CC18E007A8482 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -157,6 +168,7 @@
 				5F99C08121D5CE3F007A8482 /* Android.bp */,
 				5F99C08221D5CE3F007A8482 /* ChangeLog */,
 				5F99C08421D5CE3F007A8482 /* CMakeLists.txt */,
+				5F953AD6220CE06B007A8482 /* fsconfig.h */,
 				5F99C08021D5CE3F007A8482 /* configure.ac */,
 				5F99C08521D5CE3F007A8482 /* COPYING */,
 				5FAF0C5721E729EC00C28BB7 /* denukify */,
@@ -170,6 +182,7 @@
 				5F99C07C21D5CDEB007A8482 /* nuked */,
 				5F6C031C21DDC638009F3609 /* Products */,
 				5F99C08621D5CE40007A8482 /* README.md */,
+				5F7F9B46220CC28B007A8482 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -178,8 +191,16 @@
 			children = (
 				5F6C031B21DDC638009F3609 /* nuked */,
 				5F40C11F21E78F1000E6F309 /* denukify */,
+				5F7F9B23220CC18E007A8482 /* libexfat.dylib */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		5F7F9B46220CC28B007A8482 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		5F99C03C21D5CDEB007A8482 /* dump */ = {
@@ -213,6 +234,7 @@
 				5F99C05221D5CDEB007A8482 /* exfat.h */,
 				5F99C04A21D5CDEB007A8482 /* exfatfs.h */,
 				5F8B50E221F92817007A8482 /* fsrestore.cpp */,
+				5F953AD3220CDE8D007A8482 /* fsrestore.hpp */,
 				5F8B50E321F92817007A8482 /* fsrestore.h */,
 				5F8B50DE21F92111007A8482 /* fstree.cpp */,
 				5F8B50DF21F92111007A8482 /* fstree.hpp */,
@@ -293,13 +315,34 @@
 				5F0A0E8221EE8498007A8482 /* ac3.h */,
 				5FAF0C5821E729EC00C28BB7 /* denukify.8 */,
 				5F0A0E8321EE8498007A8482 /* find_ac3.c */,
-				5FAF0C5A21E729EC00C28BB7 /* main.c */,
+				5FAF0C5A21E729EC00C28BB7 /* main.cpp */,
 				5FAF0C5921E729EC00C28BB7 /* Makefile.am */,
 			);
 			path = denukify;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		5F7F9B1F220CC18E007A8482 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F953AD4220CDE8D007A8482 /* fsrestore.hpp in Headers */,
+				5F7F9B42220CC21C007A8482 /* exfatfs.h in Headers */,
+				5F7F9B3F220CC212007A8482 /* byteorder.h in Headers */,
+				5F7F9B44220CC221007A8482 /* fsrestore.h in Headers */,
+				5F7F9B3E220CC210007A8482 /* bptree.h in Headers */,
+				5F7F9B41220CC21A007A8482 /* exfat.h in Headers */,
+				5F7F9B40220CC216007A8482 /* compiler.h in Headers */,
+				5F7F9B36220CC1EA007A8482 /* platform.h in Headers */,
+				5F953AD7220CE06C007A8482 /* fsconfig.h in Headers */,
+				5F7F9B34220CC1E2007A8482 /* recovery.h in Headers */,
+				5F7F9B3A220CC200007A8482 /* fstree.hpp in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
 
 /* Begin PBXLegacyTarget section */
 		5F2E2EF021D5CB1C007A8482 /* NuclearArmageddon */ = {
@@ -352,6 +395,23 @@
 			productReference = 5F6C031B21DDC638009F3609 /* nuked */;
 			productType = "com.apple.product-type.tool";
 		};
+		5F7F9B22220CC18E007A8482 /* libexfat */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5F7F9B2B220CC18E007A8482 /* Build configuration list for PBXNativeTarget "libexfat" */;
+			buildPhases = (
+				5F7F9B1F220CC18E007A8482 /* Headers */,
+				5F7F9B20220CC18E007A8482 /* Sources */,
+				5F7F9B21220CC18E007A8482 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libexfat;
+			productName = libexfat;
+			productReference = 5F7F9B23220CC18E007A8482 /* libexfat.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -368,6 +428,9 @@
 						CreatedOnToolsVersion = 10.1;
 					};
 					5F6C031A21DDC638009F3609 = {
+						CreatedOnToolsVersion = 10.1;
+					};
+					5F7F9B22220CC18E007A8482 = {
 						CreatedOnToolsVersion = 10.1;
 					};
 				};
@@ -387,6 +450,7 @@
 				5F2E2EF021D5CB1C007A8482 /* NuclearArmageddon */,
 				5F6C031A21DDC638009F3609 /* nuked */,
 				5F40C11E21E78F1000E6F309 /* denukify */,
+				5F7F9B22220CC18E007A8482 /* libexfat */,
 			);
 		};
 /* End PBXProject section */
@@ -396,21 +460,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F40C12B21E78FE800E6F309 /* cluster.c in Sources */,
-				5F40C12C21E78FE800E6F309 /* repair.c in Sources */,
-				5F40C12A21E78FE800E6F309 /* time.c in Sources */,
-				5F40C12721E78FE000E6F309 /* log.c in Sources */,
-				5F40C12921E78FE800E6F309 /* utils.c in Sources */,
-				5F40C12F21E78FEC00E6F309 /* mount.c in Sources */,
-				5F8B50E521F92817007A8482 /* fsrestore.cpp in Sources */,
-				5F26840621F62D62007A8482 /* recovery.c in Sources */,
-				5F40C12D21E78FE800E6F309 /* utf.c in Sources */,
-				5F26840A21F66D5B007A8482 /* bptree.c in Sources */,
-				5F40C12621E78FD800E6F309 /* main.c in Sources */,
-				5F40C12E21E78FEC00E6F309 /* io.c in Sources */,
-				5F40C13021E78FEF00E6F309 /* lookup.c in Sources */,
-				5F8B50E121F92111007A8482 /* fstree.cpp in Sources */,
-				5F40C12821E78FE300E6F309 /* node.c in Sources */,
+				5F40C12621E78FD800E6F309 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -418,21 +468,28 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F6C032C21DDC65F009F3609 /* node.c in Sources */,
-				5F6C032821DDC654009F3609 /* time.c in Sources */,
-				5F6C032621DDC64E009F3609 /* mount.c in Sources */,
-				5F6C032A21DDC659009F3609 /* repair.c in Sources */,
-				5F6C032321DDC642009F3609 /* log.c in Sources */,
-				5F6C032521DDC64C009F3609 /* io.c in Sources */,
-				5F8B50E421F92817007A8482 /* fsrestore.cpp in Sources */,
-				5F26840521F62D62007A8482 /* recovery.c in Sources */,
-				5F6C032921DDC656009F3609 /* cluster.c in Sources */,
-				5F26840921F66D5B007A8482 /* bptree.c in Sources */,
-				5F6C032721DDC652009F3609 /* utils.c in Sources */,
 				5F6C032D21DDC663009F3609 /* main.c in Sources */,
-				5F6C032B21DDC65C009F3609 /* utf.c in Sources */,
-				5F8B50E021F92111007A8482 /* fstree.cpp in Sources */,
-				5F6C032421DDC649009F3609 /* lookup.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5F7F9B20220CC18E007A8482 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F7F9B2F220CC1BB007A8482 /* cluster.c in Sources */,
+				5F7F9B43220CC21E007A8482 /* fsrestore.cpp in Sources */,
+				5F7F9B3B220CC202007A8482 /* io.c in Sources */,
+				5F7F9B45220CC224007A8482 /* fstree.cpp in Sources */,
+				5F7F9B33220CC1DF007A8482 /* repair.c in Sources */,
+				5F7F9B35220CC1E5007A8482 /* recovery.c in Sources */,
+				5F7F9B3C220CC206007A8482 /* log.c in Sources */,
+				5F7F9B30220CC1D1007A8482 /* utils.c in Sources */,
+				5F7F9B32220CC1DB007A8482 /* time.c in Sources */,
+				5F7F9B38220CC1F2007A8482 /* mount.c in Sources */,
+				5F7F9B37220CC1EE007A8482 /* node.c in Sources */,
+				5F7F9B31220CC1D6007A8482 /* utf.c in Sources */,
+				5F7F9B39220CC1F6007A8482 /* lookup.c in Sources */,
+				5F7F9B2E220CC1B7007A8482 /* bptree.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -574,11 +631,15 @@
 		5F40C12321E78F1000E6F309 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5CXXA9F47J;
 				HEADER_SEARCH_PATHS = libexfat;
+				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				OTHER_LDFLAGS = libexfat/libexfat.a;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				VALID_ARCHS = x86_64;
@@ -588,11 +649,15 @@
 		5F40C12421E78F1000E6F309 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LIBRARY = "libc++";
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5CXXA9F47J;
 				HEADER_SEARCH_PATHS = libexfat;
+				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				OTHER_LDFLAGS = libexfat/libexfat.a;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				VALID_ARCHS = x86_64;
@@ -626,7 +691,7 @@
 		5F7F9B2C220CC18E007A8482 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5CXXA9F47J;
@@ -647,7 +712,7 @@
 		5F7F9B2D220CC18E007A8482 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5CXXA9F47J;
@@ -700,6 +765,15 @@
 			buildConfigurations = (
 				5F6C032021DDC638009F3609 /* Debug */,
 				5F6C032121DDC638009F3609 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5F7F9B2B220CC18E007A8482 /* Build configuration list for PBXNativeTarget "libexfat" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5F7F9B2C220CC18E007A8482 /* Debug */,
+				5F7F9B2D220CC18E007A8482 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
