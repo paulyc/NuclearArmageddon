@@ -23,6 +23,8 @@
 #ifndef fsrestore_hpp
 #define fsrestore_hpp
 
+#ifdef __cplusplus
+
 #include <iostream>
 #include <map>
 #include <unordered_map>
@@ -37,24 +39,32 @@
 #include "fstree.hpp"
 #include "fsexcept.hpp"
 
+namespace io {
+namespace github {
+namespace paulyc {
+
+/* The classes below are exported */
+/* Don't think we really need this with the namespaces, but reminder to pick one or the other */
+#pragma GCC visibility push(default)
+
 class ExFATFilesystem
 {
 public:
     ExFATFilesystem();
     virtual ~ExFATFilesystem();
 
-    void openFilesystem(std::string device_path, off_t filesystem_offset, bool rw) throw(); // from start of partition or disk
-    void rebuildFromScanLogfile(std::string filename) throw();
-    void writeRestoreJournal(int fd);
+    void openFilesystem(std::string device_path, off_t filesystem_offset, bool rw); // from start of partition or disk
+    void rebuildFromScanLogfile(std::string logfilename, std::function<void(off_t, struct exfat_node_entry&)> fun);
+    void writeRestoreJournal(int fd) const;
     void reconstructLive(int fd);
-    void restoreFilesFromScanLogFile(std::string filter, std::string output_dir) throw();
+    void restoreFilesFromScanLogFile(std::string logfilename, std::string output_dir);
 
 private:
-    void _processLine(std::string &line, std::istringstream &iss, size_t line_no) throw();
-    void _processFileDirectoryEntry(off_t disk_offset) throw();
-    void _processFileDirectoryEntryCb(off_t disk_offset, std::function<void(off_t, struct exfat_node_entry&)> fun) throw();
+    void _processLine(std::string &line, std::istringstream &iss, size_t line_no, std::function<void(off_t, struct exfat_node_entry&)> fun);
+    void _processFileDirectoryEntry(off_t disk_offset, std::function<void(off_t, struct exfat_node_entry&)> fun);
 
     std::string _device_path;
+    off_t _fs_offset;
 
     std::unique_ptr<ExFATDirectoryTree> _directory_tree;
 
@@ -141,5 +151,13 @@ private:
         .size = {(FAT_CLUSTER_COUNT) / 8 + (FAT_CLUSTER_COUNT) % 8} /* in bytes = Ceil (Cluster count / 8 ) */
     };
 };
+
+#pragma GCC visibility pop
+
+}
+}
+}
+
+#endif /* __cplusplus */
 
 #endif /* fsrestore_hpp */

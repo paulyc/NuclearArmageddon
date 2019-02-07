@@ -24,7 +24,13 @@
 #include "fstree.hpp"
 #include "fsexcept.hpp"
 
+#include <fstream>
 #include <iomanip>
+#include <cstdio>
+
+namespace io {
+namespace github {
+namespace paulyc {
 
 ExFATDirectoryTree::ExFATDirectoryTree(off_t root_directory_offset)
 {
@@ -36,7 +42,7 @@ ExFATDirectoryTree::~ExFATDirectoryTree() {
 
 }
 
-void ExFATDirectoryTree::addNode(off_t fde_offset, struct exfat_node_entry &entry) throw() {
+void ExFATDirectoryTree::addNode(off_t fde_offset, struct exfat_node_entry &entry) {
     // verify checksum
     const uint8_t continuations = entry.fde.continuations;
     if (continuations < 2 || continuations > 18) {
@@ -65,4 +71,40 @@ void ExFATDirectoryTree::writeRepairJournal(int fd) throw() {
 
 void ExFATDirectoryTree::reconstructLive(int fd) throw() {
     
+}
+
+#define DEFAULT_CLUSTER_SIZE (512*512)
+void ExFATDirectoryTree::File::writeToDirectory(struct exfat_dev* dev, off_t fs_offset, std::string dirpath) const {
+    uint8_t buffer[DEFAULT_CLUSTER_SIZE];
+    const cluster_t cluster_ofs = this->_entry.efi.start_cluster.__u32;
+    off_t disk_offset = cluster_ofs * DEFAULT_CLUSTER_SIZE + fs_offset; // todo fix dyanmic cluster size
+    size_t bytes_remaining = this->_entry.efi.size.__u64;
+    size_t bytes_written = 0;
+
+    FILE *outfile = fopen((dirpath + "/" + this->_name).c_str(), "wb");
+
+    while (bytes_remaining > 0) {
+        ssize_t read = exfat_pread(dev, buffer, std::min(bytes_remaining, sizeof(buffer)), disk_offset);
+        if (read < 0) { //error
+            throw LIBC_EXCEPTION;
+        } else if (read == 0) { //eof
+            std::cerr << "exfat_pread returned eof while bytes_remaining is " << bytes_remaining << std::endl;
+            break;
+        }
+
+        size_t written = fwrite(buffer, sizeof(uint8_t), read, outfile);
+        if (written != read) {
+            throw LIBC_EXCEPTION;
+        }
+
+        bytes_remaining -= read;
+        bytes_written += read;
+        disk_offset += read;
+    }
+
+    fclose(outfile);
+}
+
+}
+}
 }

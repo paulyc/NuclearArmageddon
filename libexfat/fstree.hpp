@@ -23,6 +23,8 @@
 #ifndef fstree_hpp
 #define fstree_hpp
 
+#ifdef __cplusplus
+
 #include "exfat.h"
 
 #include <iostream>
@@ -31,11 +33,18 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <optional>
 #include <cstring>
 
 #include "fsexcept.hpp"
 
-struct exfat;
+namespace io {
+namespace github {
+namespace paulyc {
+
+/* The classes below are exported */
+/* Don't think we really need this with the namespaces, but reminder to pick one or the other */
+#pragma GCC visibility push(default)
 
 class ExFATDirectoryTree
 {
@@ -43,7 +52,7 @@ public:
     ExFATDirectoryTree(off_t root_directory_offset);
     virtual ~ExFATDirectoryTree();
 
-    void addNode(off_t fde_offset, struct exfat_node_entry &entry) throw();
+    void addNode(off_t fde_offset, struct exfat_node_entry &entry);
     void writeRepairJournal(int fd) throw();
     void reconstructLive(int fd) throw();
 
@@ -59,29 +68,29 @@ public:
     class Node
     {
     public:
-        Node() {}
-        Node(std::shared_ptr<Directory> &parent) : _parent(parent) {}
+        Node(std::string name) : _name(name) {}
+        Node(std::string name, std::shared_ptr<Directory> &parent) : _name(name), _parent(parent) {}
         virtual ~Node() {}
 
-        virtual bool loadFromFDE(off_t fde_offset, struct exfat_node_entry &entry) throw();
+        virtual bool loadFromFDE(off_t fde_offset, struct exfat_node_entry &entry) { return false; }
 
         struct exfat_node_entry &getNodeEntry() { return _entry; }
         bool isFragmented() const { return EXFAT_FLAG_CONTIGUOUS & _entry.efi.flags; }
         size_t getSize() const { return _entry.efi.size.__u64; }
     protected:
         Node(off_t offset, struct exfat_node_entry &entry) : _node_offset(offset), _entry(entry) {}
-    private:
+    //private:
+        std::string _name; // utf-8
         off_t _node_offset;
         struct exfat_node_entry _entry;
         std::shared_ptr<Directory> _parent;
-        std::string _name; // utf-8
     };
 
     class Directory : public Node
     {
     public:
-        Directory() {}
-        Directory(std::shared_ptr<Directory> &parent) : Node(parent) {}
+        Directory(std::string name) : Node(name) {}
+        Directory(std::string name, std::shared_ptr<Directory> &parent) : Node(name, parent) {}
         virtual ~Directory() {}
 
         void addChild(std::shared_ptr<Node> child) noexcept;
@@ -100,10 +109,21 @@ public:
     class File : public Node
     {
     public:
-        File(std::shared_ptr<Directory> &parent) : Node(parent) {}
+        File(std::string name) : Node(name) {}
+        File(std::string name, std::shared_ptr<Directory> &parent) : Node(name, parent) {}
         virtual ~File() {}
+
+        void writeToDirectory(struct exfat_dev* dev, off_t fs_offset, std::string dirpath) const;
     private:
     };
 };
+
+#pragma GCC visibility pop
+
+}
+}
+}
+
+#endif /* __cplusplus */
 
 #endif /* fstree_hpp */

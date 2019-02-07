@@ -26,15 +26,6 @@
 
 #include "exfat.h"
 
-static const size_t sector_size_bytes = SECTOR_SIZE_BYTES; // bytes 0x0200
-static const size_t sectors_per_cluster = SECTORS_PER_CLUSTER; // 0x0200
-static const size_t cluster_size_bytes = SECTOR_SIZE_BYTES * SECTORS_PER_CLUSTER;
-static const size_t disk_size_bytes = DISK_SIZE_BYTES; // 0x0000040000000000; // 4TB
-static const size_t cluster_heap_disk_start_sector = CLUSTER_HEAP_DISK_START_SECTOR;
-static const size_t cluster_heap_partition_start_sector = CLUSTER_HEAP_PARTITION_START_SECTOR;
-static const size_t partition_start_sector = PARTITION_START_SECTOR;
-static const size_t cluster_count = CLUSTER_COUNT;
-
 void init_fat(struct exfat_file_allocation_table *fat) {
     //const size_t sectors = sizeof(struct exfat_file_allocation_table) / SECTOR_SIZE_BYTES;
     fat->entries[0] = 0x0FFFFFF8; // Media descriptor hard drive

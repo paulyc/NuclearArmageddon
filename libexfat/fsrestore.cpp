@@ -27,6 +27,15 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <memory>
+
+namespace io {
+namespace github {
+namespace paulyc {
+
+constexpr struct exfat_entry_bitmap ExFATFilesystem::BMP_ENTRY;
+constexpr struct exfat_volume_boot_record ExFATFilesystem::VBR;
+constexpr struct exfat_entry_label ExFATFilesystem::VOLUME_LABEL;
 
 ExFATFilesystem::ExFATFilesystem() :
 	_volume_label(VOLUME_LABEL),
@@ -46,17 +55,17 @@ ExFATFilesystem::~ExFATFilesystem() {
     }
 }
 
-void ExFATFilesystem::openFilesystem(std::string device_path, off_t filesystem_offset, bool rw) throw() {
+void ExFATFilesystem::openFilesystem(std::string device_path, off_t filesystem_offset, bool rw) {
     _filesystem.dev = exfat_open(device_path.c_str(), rw ? EXFAT_MODE_RW : EXFAT_MODE_RO);
     if (_filesystem.dev != nullptr) {
-        //_fs_offset = filesystem_offset;
+        _fs_offset = filesystem_offset;
     } else {
         throw LIBC_EXCEPTION;
     }
 }
 
-void ExFATFilesystem::rebuildFromScanLogfile(std::string filename) throw() {
-    std::ifstream logfile(filename);
+void ExFATFilesystem::rebuildFromScanLogfile(std::string logfilename, std::function<void(off_t, struct exfat_node_entry&)> fun) {
+    std::ifstream logfile(logfilename);
     std::string line;
     size_t line_no = 0;
     while (std::getline(logfile, line)) {
@@ -66,21 +75,61 @@ void ExFATFilesystem::rebuildFromScanLogfile(std::string filename) throw() {
         size_t node_offset;
         cluster_t cluster_offset;
         ++line_no;
-        _processLine(line, iss, line_no);
+        _processLine(line, iss, line_no, fun);
     }
 }
 
-void ExFATFilesystem::restoreFilesFromScanLogFile(std::string filter, std::string output_dir) throw() {
-//    exfat
+void ExFATFilesystem::restoreFilesFromScanLogFile(std::string logfilename, std::string output_dir) {
+    std::function<void(off_t, struct exfat_node_entry&)> fun =
+        [this, &output_dir](off_t fs_offset, struct exfat_node_entry& entry)
+    {
+        le16_t fname_utf16[EXFAT_NAME_MAX+1];
+        le16_t *pfname_utf16 = fname_utf16;
+        char fname[EXFAT_UTF8_ENAME_BUFFER_MAX];
+
+        if (entry.fde.attrib.__u16 & EXFAT_ATTRIB_DIR) { // this is a directory, skip
+        } else {// going to assume it is a file
+            for (int c = 0; c < entry.fde.continuations - 2; ++c) {
+                if (entry.u_continuations[c].ent.type == EXFAT_ENTRY_FILE_NAME) {
+                    memcpy(pfname_utf16, entry.u_continuations[c].name.name, EXFAT_ENAME_MAX * sizeof(le16_t));
+                    pfname_utf16 += EXFAT_ENAME_MAX;
+                }
+            }
+            pfname_utf16->__u16 = 0;
+            int res = utf16_to_utf8(fname, fname_utf16, sizeof(fname), sizeof(le16_t) * EXFAT_NAME_MAX);
+            if (res == 0) {
+                //check name
+                std::string name(fname);
+                if (name.rfind(".DTS") != std::string::npos || name.rfind(".dts") != std::string::npos) {
+                    std::cout << "found file " << name << ", checking contiguity" << std::endl;
+                    if (entry.efi.flags & EXFAT_FLAG_CONTIGUOUS) {
+                        std::shared_ptr<ExFATDirectoryTree::File> f = std::make_shared<ExFATDirectoryTree::File>(name);
+                        std::cout << name << " is contiguous, attempting to write" << std::endl;
+                        f->writeToDirectory(_filesystem.dev, _fs_offset, output_dir);
+                    } else {
+                        std::cerr << name << " is fragmented, giving up" << std::endl;
+                    }
+                }
+            } else {
+                std::cerr << "utf16_to_utf8 returned " << res << std::endl;
+            }
+        }
+    };
+    this->rebuildFromScanLogfile(logfilename, fun);
 }
 
-void ExFATFilesystem::writeRestoreJournal(int fd) {
+void ExFATFilesystem::writeRestoreJournal(int fd) const {
 }
 
 void ExFATFilesystem::reconstructLive(int fd) {
 }
 
-void ExFATFilesystem::_processLine(std::string &line, std::istringstream &iss, size_t line_no) throw() {
+void ExFATFilesystem::_processLine(
+    std::string &line,
+    std::istringstream &iss,
+    size_t line_no,
+    std::function<void(off_t, struct exfat_node_entry&)> fun)
+{
     std::string line_ident, dummy;
     size_t node_offset, cluster_offset;
 
@@ -94,7 +143,7 @@ void ExFATFilesystem::_processLine(std::string &line, std::istringstream &iss, s
                 }
             } else if (line_ident == "FDE") {
                 if (iss >> node_offset) {
-                    _processFileDirectoryEntry(node_offset);
+                    _processFileDirectoryEntry(node_offset, fun);
                 } else {
                     break;
                 }
@@ -116,39 +165,9 @@ void ExFATFilesystem::_processLine(std::string &line, std::istringstream &iss, s
     throw ex;
 }
 
-void ExFATFilesystem::_processFileDirectoryEntry(off_t disk_offset) throw() {
-    //_processFileDirectoryEntryCb(disk_offset, _directory_tree::addNode);
-    _processFileDirectoryEntryCb(disk_offset, [this](off_t fs_offset, struct exfat_node_entry& entry) {
-        le16_t fname_utf16[EXFAT_NAME_MAX];
-        le16_t *pfname_utf16 = fname_utf16;
-        char fname[EXFAT_UTF8_ENAME_BUFFER_MAX];
-        char *pfname = fname;
-
-        if (entry.fde.attrib.__u16 & EXFAT_ATTRIB_DIR) { // this is a directory, skip
-        } else { // going to assume it is a file
-            bool copy = false;
-            for (int c = 0; c < entry.fde.continuations - 2; ++c) {
-                if (entry.u_continuations[c].ent.type == EXFAT_ENTRY_FILE_NAME) {
-                    memcpy(pfname_utf16, entry.u_continuations[c].name.name, EXFAT_ENAME_MAX * sizeof(le16_t));
-                    pfname_utf16 += EXFAT_ENAME_MAX;
-                }
-            }
-            pfname_utf16->__u16 = 0;
-            int res = utf16_to_utf8(fname, fname_utf16, sizeof(fname), sizeof(le16_t) * EXFAT_NAME_MAX);
-            if (res == 0) {
-                //check name
-                std::string s(fname);
-                if (s.rfind(".DTS") != std::string::npos || s.rfind(".dts") != std::string::npos) {
-                    //check name
-                }
-            }
-        }
-    });
-}
-
-void ExFATFilesystem::_processFileDirectoryEntryCb(
-    off_t disk_offset,
-    std::function<void(off_t, struct exfat_node_entry&)> fun) throw()
+void ExFATFilesystem::_processFileDirectoryEntry(
+     off_t disk_offset,
+     std::function<void(off_t, struct exfat_node_entry&)> fun)
 {
     struct exfat_node_entry node_entry;
     ssize_t rd = exfat_pread(_filesystem.dev, &node_entry, sizeof(node_entry), disk_offset);
@@ -165,7 +184,9 @@ void ExFATFilesystem::_processFileDirectoryEntryCb(
 exfat_filesystem_t reconstruct_filesystem_from_scan_logfile(const char *fsdev, const char *logfilename) {
     ExFATFilesystem *fs = new ExFATFilesystem;
     fs->openFilesystem(fsdev, 0, false);
-    fs->rebuildFromScanLogfile(logfilename);
+    fs->rebuildFromScanLogfile(logfilename, [](off_t offset, struct exfat_node_entry &entry) {
+		// TODO implement
+    });
     return fs;
 }
 
@@ -177,4 +198,8 @@ void reconstruct_live_fs(exfat_filesystem_t fs, int fd) {
 
 void free_filesystem(exfat_filesystem_t fs) {
     delete (ExFATFilesystem*)fs;
+}
+
+}
+}
 }

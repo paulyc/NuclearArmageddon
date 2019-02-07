@@ -37,6 +37,7 @@ extern "C" {
 #include "bptree.h"
 #include "recovery.h"
 #include "fsrestore.h"
+#include "../fsconfig.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -220,6 +221,9 @@ bool exfat_fix_unknown_entry(struct exfat* ef, struct exfat_node* dir,
 
 #ifdef __cplusplus
 }
+
+#include "fsrestore.hpp"
+
 #endif
 
 #endif /* ifndef EXFAT_H_INCLUDED */
