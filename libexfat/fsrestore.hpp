@@ -30,6 +30,7 @@
 #include <set>
 #include <string>
 #include <exception>
+#include <functional>
 #include <cerrno>
 #include <cstring>
 
@@ -46,10 +47,12 @@ public:
     void rebuildFromScanLogfile(std::string filename) throw();
     void writeRestoreJournal(int fd);
     void reconstructLive(int fd);
+    void restoreFilesFromScanLogFile(std::string filter, std::string output_dir) throw();
 
 private:
     void _processLine(std::string &line, std::istringstream &iss, size_t line_no) throw();
-    void _processFileDirectoryEntry(size_t disk_offset) throw();
+    void _processFileDirectoryEntry(off_t disk_offset) throw();
+    void _processFileDirectoryEntryCb(off_t disk_offset, std::function<void(off_t, struct exfat_node_entry&)> fun) throw();
 
     std::string _device_path;
 

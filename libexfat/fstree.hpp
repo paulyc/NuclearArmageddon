@@ -47,7 +47,7 @@ public:
     void writeRepairJournal(int fd) throw();
     void reconstructLive(int fd) throw();
 
-private:
+//private:
     class Node;
     class Directory;
     class RootDirectory;

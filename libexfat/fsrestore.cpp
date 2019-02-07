@@ -70,6 +70,10 @@ void ExFATFilesystem::rebuildFromScanLogfile(std::string filename) throw() {
     }
 }
 
+void ExFATFilesystem::restoreFilesFromScanLogFile(std::string filter, std::string output_dir) throw() {
+//    exfat
+}
+
 void ExFATFilesystem::writeRestoreJournal(int fd) {
 }
 
@@ -112,17 +116,49 @@ void ExFATFilesystem::_processLine(std::string &line, std::istringstream &iss, s
     throw ex;
 }
 
-void ExFATFilesystem::_processFileDirectoryEntry(size_t disk_offset) throw() {
+void ExFATFilesystem::_processFileDirectoryEntry(off_t disk_offset) throw() {
+    //_processFileDirectoryEntryCb(disk_offset, _directory_tree::addNode);
+    _processFileDirectoryEntryCb(disk_offset, [this](off_t fs_offset, struct exfat_node_entry& entry) {
+        le16_t fname_utf16[EXFAT_NAME_MAX];
+        le16_t *pfname_utf16 = fname_utf16;
+        char fname[EXFAT_UTF8_ENAME_BUFFER_MAX];
+        char *pfname = fname;
+
+        if (entry.fde.attrib.__u16 & EXFAT_ATTRIB_DIR) { // this is a directory, skip
+        } else { // going to assume it is a file
+            bool copy = false;
+            for (int c = 0; c < entry.fde.continuations - 2; ++c) {
+                if (entry.u_continuations[c].ent.type == EXFAT_ENTRY_FILE_NAME) {
+                    memcpy(pfname_utf16, entry.u_continuations[c].name.name, EXFAT_ENAME_MAX * sizeof(le16_t));
+                    pfname_utf16 += EXFAT_ENAME_MAX;
+                }
+            }
+            pfname_utf16->__u16 = 0;
+            int res = utf16_to_utf8(fname, fname_utf16, sizeof(fname), sizeof(le16_t) * EXFAT_NAME_MAX);
+            if (res == 0) {
+                //check name
+                std::string s(fname);
+                if (s.rfind(".DTS") != std::string::npos || s.rfind(".dts") != std::string::npos) {
+                    //check name
+                }
+            }
+        }
+    });
+}
+
+void ExFATFilesystem::_processFileDirectoryEntryCb(
+    off_t disk_offset,
+    std::function<void(off_t, struct exfat_node_entry&)> fun) throw()
+{
     struct exfat_node_entry node_entry;
     ssize_t rd = exfat_pread(_filesystem.dev, &node_entry, sizeof(node_entry), disk_offset);
     if (rd == sizeof(struct exfat_node_entry)) {
-        _directory_tree->addNode(disk_offset, node_entry);
+        fun(disk_offset, node_entry);
     } else if (rd == 0) {
         return;
     } else if (rd == -1) {
         throw LIBC_EXCEPTION;
     }
-
 }
 
 /* C API */
