@@ -20,6 +20,7 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 //
 
+#include "exfat++.h"
 #include "fsrestore.hpp"
 #include "fsrestore.h"
 #include "fsexcept.hpp"

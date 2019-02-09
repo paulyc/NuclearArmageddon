@@ -36,6 +36,8 @@
 		5F7F9B48220CC290007A8482 /* libexfat.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7F9B23220CC18E007A8482 /* libexfat.dylib */; };
 		5F953AD4220CDE8D007A8482 /* fsrestore.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5F953AD3220CDE8D007A8482 /* fsrestore.hpp */; };
 		5F953AD7220CE06C007A8482 /* fsconfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F953AD6220CE06B007A8482 /* fsconfig.h */; };
+		5FBA7527220F2489007A8482 /* exfat++.h in Headers */ = {isa = PBXBuildFile; fileRef = 5FBA7526220F2489007A8482 /* exfat++.h */; };
+		5FBA7529220F2509007A8482 /* fsexcept.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5FBA7528220F2509007A8482 /* fsexcept.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -133,6 +135,8 @@
 		5FAF0C5821E729EC00C28BB7 /* denukify.8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = denukify.8; sourceTree = "<group>"; };
 		5FAF0C5921E729EC00C28BB7 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
 		5FAF0C5A21E729EC00C28BB7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		5FBA7526220F2489007A8482 /* exfat++.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "exfat++.h"; sourceTree = "<group>"; };
+		5FBA7528220F2509007A8482 /* fsexcept.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = fsexcept.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -232,7 +236,9 @@
 				5F99C05521D5CDEB007A8482 /* cluster.c */,
 				5F99C04C21D5CDEB007A8482 /* compiler.h */,
 				5F99C05221D5CDEB007A8482 /* exfat.h */,
+				5FBA7526220F2489007A8482 /* exfat++.h */,
 				5F99C04A21D5CDEB007A8482 /* exfatfs.h */,
+				5FBA7528220F2509007A8482 /* fsexcept.hpp */,
 				5F8B50E221F92817007A8482 /* fsrestore.cpp */,
 				5F953AD3220CDE8D007A8482 /* fsrestore.hpp */,
 				5F8B50E321F92817007A8482 /* fsrestore.h */,
@@ -329,6 +335,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				5F953AD4220CDE8D007A8482 /* fsrestore.hpp in Headers */,
+				5FBA7527220F2489007A8482 /* exfat++.h in Headers */,
+				5FBA7529220F2509007A8482 /* fsexcept.hpp in Headers */,
 				5F7F9B42220CC21C007A8482 /* exfatfs.h in Headers */,
 				5F7F9B3F220CC212007A8482 /* byteorder.h in Headers */,
 				5F7F9B44220CC221007A8482 /* fsrestore.h in Headers */,

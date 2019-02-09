@@ -23,9 +23,7 @@
 #ifndef fstree_hpp
 #define fstree_hpp
 
-#ifdef __cplusplus
-
-#include "exfat.h"
+//#include "exfat.h"
 
 #include <iostream>
 #include <map>
@@ -44,7 +42,7 @@ namespace paulyc {
 
 /* The classes below are exported */
 /* Don't think we really need this with the namespaces, but reminder to pick one or the other */
-#pragma GCC visibility push(default)
+//#pragma GCC visibility push(default)
 
 class ExFATDirectoryTree
 {
@@ -118,12 +116,12 @@ public:
     };
 };
 
-#pragma GCC visibility pop
+//#pragma GCC visibility pop
 
 }
 }
 }
 
-#endif /* __cplusplus */
+//#endif /* __cplusplus */
 
 #endif /* fstree_hpp */

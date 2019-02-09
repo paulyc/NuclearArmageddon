@@ -23,8 +23,6 @@
 #ifndef fsrestore_hpp
 #define fsrestore_hpp
 
-#ifdef __cplusplus
-
 #include <iostream>
 #include <map>
 #include <unordered_map>
@@ -42,10 +40,6 @@
 namespace io {
 namespace github {
 namespace paulyc {
-
-/* The classes below are exported */
-/* Don't think we really need this with the namespaces, but reminder to pick one or the other */
-#pragma GCC visibility push(default)
 
 class ExFATFilesystem
 {
@@ -152,12 +146,8 @@ private:
     };
 };
 
-#pragma GCC visibility pop
-
 }
 }
 }
-
-#endif /* __cplusplus */
 
 #endif /* fsrestore_hpp */
