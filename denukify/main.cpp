@@ -30,9 +30,13 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#include <iostream>
+#include <string>
+#include <exception>
+
 static void usage(const char* prog)
 {
-    fprintf(stderr, "Usage: %s <device> <logfile>\n", prog);
+    fprintf(stderr, "Usage: %s <device> <logfile> <outdir>\n", prog);
     fprintf(stderr, "       %s -V\n", prog);
     exit(1);
 }
@@ -41,9 +45,7 @@ int main(int argc, char* argv[])
 {
     int opt, ret = 0;
     const char* options;
-    const char* spec = NULL;
-    struct exfat_dev *dev = NULL;
-    FILE *logfile = NULL;
+    std::string devspec, logspec, dirspec;
 
     fprintf(stderr, "%s %s\n", argv[0], VERSION);
 
@@ -60,39 +62,22 @@ int main(int argc, char* argv[])
                 break;
         }
     }
-    if (argc - optind != 2)
+
+    if (argc - optind != 3)
         usage(argv[0]);
-    spec = argv[optind++];
-    fprintf(stderr, "Reconstructing nuked file system on %s.\n", spec);
-    dev = exfat_open(spec, EXFAT_MODE_RW);
+    devspec = argv[optind++];
+    logspec = argv[optind++];
+    dirspec = argv[optind];
 
-    do {
-        if (dev == NULL) {
-            ret = errno;
-            fprintf(stderr, "exfat_open(%s) failed: %s\n", spec, strerror(ret));
-            break;
-        }
+    std::cerr << "Reconstructing nuked file system on " << devspec << " from logfile " << logspec << " to directory " << dirspec << std::endl;;
 
-        spec = argv[optind];
-        logfile = fopen(spec, "r");
-        if (logfile == NULL) {
-            ret = errno;
-            fprintf(stderr, "fopen(%s) failed: %s\n", spec, strerror(ret));
-            break;
-        }
-
-        /*ret = reconstruct(dev, logfile);
-        if (ret != 0) {
-            fprintf(stderr, "reconstruct() returned error: %s\n", strerror(ret));
-        }*/
-    } while (0);
-
-    io::github::paulyc::ExFATFilesystem fs;
-    fs.openFilesystem("/dev/disk2", start_offset_bytes, false);
-    fs.restoreFilesFromScanLogFile(".dts", "/Users/paulyc/recovery");
-
-    exfat_close(dev);
-    fclose(logfile);
+    try {
+        io::github::paulyc::ExFATFilesystem fs;
+        fs.openFilesystem(devspec, start_offset_bytes, false);
+        fs.restoreFilesFromScanLogFile(logspec, dirspec);
+    } catch (const std::exception &e) {
+        fprintf(stderr, "Got exception restoring files: %s\n", e.what());
+    }
 
     return ret;
 }
