@@ -17,7 +17,7 @@
                BlueprintIdentifier = "5F6C031A21DDC638009F3609"
                BuildableName = "nuked"
                BlueprintName = "nuked"
-               ReferencedContainer = "container:NuclearHolocaust.xcodeproj">
+               ReferencedContainer = "container:NuclearArmageddon.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,7 @@
             BlueprintIdentifier = "5F6C031A21DDC638009F3609"
             BuildableName = "nuked"
             BlueprintName = "nuked"
-            ReferencedContainer = "container:NuclearHolocaust.xcodeproj">
+            ReferencedContainer = "container:NuclearArmageddon.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -58,7 +58,7 @@
             BlueprintIdentifier = "5F6C031A21DDC638009F3609"
             BuildableName = "nuked"
             BlueprintName = "nuked"
-            ReferencedContainer = "container:NuclearHolocaust.xcodeproj">
+            ReferencedContainer = "container:NuclearArmageddon.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -77,7 +77,7 @@
             BlueprintIdentifier = "5F6C031A21DDC638009F3609"
             BuildableName = "nuked"
             BlueprintName = "nuked"
-            ReferencedContainer = "container:NuclearHolocaust.xcodeproj">
+            ReferencedContainer = "container:NuclearArmageddon.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

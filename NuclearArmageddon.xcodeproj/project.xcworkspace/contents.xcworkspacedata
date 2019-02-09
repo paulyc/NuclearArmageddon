@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:NuclearHolocaust.xcodeproj">
+      location = "self:/Users/paulyc/Development/NuclearArmageddon/NuclearArmageddon.xcodeproj">
    </FileRef>
 </Workspace>

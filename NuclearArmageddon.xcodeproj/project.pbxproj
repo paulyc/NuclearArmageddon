@@ -302,16 +302,16 @@
 /* End PBXGroup section */
 
 /* Begin PBXLegacyTarget section */
-		5F2E2EF021D5CB1C007A8482 /* NuclearHolocaust */ = {
+		5F2E2EF021D5CB1C007A8482 /* NuclearArmageddon */ = {
 			isa = PBXLegacyTarget;
 			buildArgumentsString = "$(ACTION)";
-			buildConfigurationList = 5F2E2EF321D5CB1C007A8482 /* Build configuration list for PBXLegacyTarget "NuclearHolocaust" */;
+			buildConfigurationList = 5F2E2EF321D5CB1C007A8482 /* Build configuration list for PBXLegacyTarget "NuclearArmageddon" */;
 			buildPhases = (
 			);
 			buildToolPath = /usr/bin/make;
 			dependencies = (
 			);
-			name = NuclearHolocaust;
+			name = NuclearArmageddon;
 			passBuildSettingsInEnvironment = 1;
 			productName = NuclearHolocaust;
 		};
@@ -372,7 +372,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 5F2E2EEF21D5CB1C007A8482 /* Build configuration list for PBXProject "NuclearHolocaust" */;
+			buildConfigurationList = 5F2E2EEF21D5CB1C007A8482 /* Build configuration list for PBXProject "NuclearArmageddon" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -384,7 +384,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				5F2E2EF021D5CB1C007A8482 /* NuclearHolocaust */,
+				5F2E2EF021D5CB1C007A8482 /* NuclearArmageddon */,
 				5F6C031A21DDC638009F3609 /* nuked */,
 				5F40C11E21E78F1000E6F309 /* denukify */,
 			);
@@ -581,6 +581,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
@@ -594,6 +595,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};
@@ -621,10 +623,52 @@
 			};
 			name = Release;
 		};
+		5F7F9B2C220CC18E007A8482 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5CXXA9F47J;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_NAME = exfat;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				VALID_ARCHS = x86_64;
+			};
+			name = Debug;
+		};
+		5F7F9B2D220CC18E007A8482 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5CXXA9F47J;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_NAME = exfat;
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				VALID_ARCHS = x86_64;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		5F2E2EEF21D5CB1C007A8482 /* Build configuration list for PBXProject "NuclearHolocaust" */ = {
+		5F2E2EEF21D5CB1C007A8482 /* Build configuration list for PBXProject "NuclearArmageddon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5F2E2EF121D5CB1C007A8482 /* Debug */,
@@ -633,7 +677,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5F2E2EF321D5CB1C007A8482 /* Build configuration list for PBXLegacyTarget "NuclearHolocaust" */ = {
+		5F2E2EF321D5CB1C007A8482 /* Build configuration list for PBXLegacyTarget "NuclearArmageddon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5F2E2EF421D5CB1C007A8482 /* Debug */,
