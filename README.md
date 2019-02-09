@@ -1,3 +1,11 @@
+> Book of Revelation
+>
+> Chapter 20
+>
+> 14 And death and hell were cast into the lake of fire. This is the second death.
+>
+> 15 And whosoever was not found written in the book of life was cast into the lake of fire.
+
 About
 -----
 
