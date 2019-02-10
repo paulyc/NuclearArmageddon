@@ -100,10 +100,10 @@ int main(int argc, char **argv) {
 
     try {
         io::github::paulyc::ExFATFilesystem fs;
-        //fs.openFilesystem(devspec, start_offset_bytes, false);
-        //fs.restoreFilesFromScanLogFile(logspec, dirspec);
+        fs.openFilesystem(devspec, start_offset_bytes, false);
+        fs.restoreFilesFromScanLogFile(logspec, dirspec);
     } catch (const std::exception &e) {
-        fprintf(stderr, "Got exception restoring files: %s\n", e.what());
+        std::cerr << "Got exception restoring files: " << e.what() << std::endl;
         return -2;
     }
 

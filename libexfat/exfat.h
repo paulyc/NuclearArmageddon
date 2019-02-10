@@ -24,6 +24,10 @@
 #ifndef EXFAT_H_INCLUDED
 #define EXFAT_H_INCLUDED
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef ANDROID
 /* Android.bp is used instead of autotools when targeting Android */
 #include "config.h"
@@ -41,9 +45,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+
 
 /* The size of off_t type must be 64 bits. File systems larger than 2 GB will
     be corrupted with 32-bit off_t. */
