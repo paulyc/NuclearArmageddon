@@ -21,15 +21,9 @@
  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <exfat.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <inttypes.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
+#if 0
 
+#include <exfat++.h>
 #include <iostream>
 #include <string>
 #include <exception>
@@ -44,30 +38,21 @@ static void usage(const char* prog)
 int main(int argc, char* argv[])
 {
     int opt, ret = 0;
-    const char* options;
     std::string devspec, logspec, dirspec;
 
     fprintf(stderr, "%s %s\n", argv[0], VERSION);
 
-    while ((opt = getopt(argc, argv, "V")) != -1)
-    {
-        switch (opt)
-        {
-            case 'V':
-                fprintf(stderr, "Copyright (C) 2011-2018  Andrew Nayenko\n");
-                fprintf(stderr, "Copyright (C) 2018-2019  Paul Ciarlo\n");
-                return 0;
-            default:
-                usage(argv[0]);
-                break;
-        }
+    if (argc == 2 && std::string(argv[1]) == std::string("-V")) {
+        fprintf(stderr, "Copyright (C) 2011-2018  Andrew Nayenko\n");
+        fprintf(stderr, "Copyright (C) 2018-2019  Paul Ciarlo\n");
+        return 0;
+    } else if (argc != 4) {
+        usage(argv[0]);
     }
 
-    if (argc - optind != 3)
-        usage(argv[0]);
-    devspec = argv[optind++];
-    logspec = argv[optind++];
-    dirspec = argv[optind];
+    devspec = argv[1];
+    logspec = argv[2];
+    dirspec = argv[3];
 
     std::cerr << "Reconstructing nuked file system on " << devspec << " from logfile " << logspec << " to directory " << dirspec << std::endl;;
 
@@ -81,3 +66,48 @@ int main(int argc, char* argv[])
 
     return ret;
 }
+
+#else
+
+#include <iostream>
+#include <string>
+
+#include <exfat++.h>
+
+static void usage(const std::string &prog)
+{
+    std::cerr << "Usage: " << prog << " <device> <logfile> <outdir>" << std::endl;
+    std::cerr << '\t' << prog << " -V" << std::endl;
+}
+
+int main(int argc, char **argv) {
+    std::string appspec, devspec, logspec, dirspec;
+
+    appspec = argv[0];
+    std::cerr << appspec << ' ' << VERSION << std::endl;
+    if (argc == 2 && std::string(argv[1]) == std::string("-V")) {
+        fprintf(stderr, "Copyright (C) 2011-2018  Andrew Nayenko\n");
+        fprintf(stderr, "Copyright (C) 2018-2019  Paul Ciarlo\n");
+        return 0;
+    } else if (argc != 4) {
+        usage(argv[0]);
+        return -1;
+    }
+
+    devspec = argv[1];
+    logspec = argv[2];
+    dirspec = argv[3];
+
+    try {
+        io::github::paulyc::ExFATFilesystem fs;
+        //fs.openFilesystem(devspec, start_offset_bytes, false);
+        //fs.restoreFilesFromScanLogFile(logspec, dirspec);
+    } catch (const std::exception &e) {
+        fprintf(stderr, "Got exception restoring files: %s\n", e.what());
+        return -2;
+    }
+
+    return 0;
+}
+
+#endif

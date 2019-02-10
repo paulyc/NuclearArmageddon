@@ -27,6 +27,10 @@
 
 #include "exfatfs.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define FDE_LOG_FMT "FDE %016zx\n"
 #define EFL_LOG_FMT "EFL %016zx %s\n"
 #define EFI_LOG_FMT "EFI %016zx\n"
@@ -109,5 +113,9 @@ void free_directory(struct exfat_node_entry *dir);
 int reconstruct(struct exfat_dev *dev, FILE *logfile);
 
 void dump_exfat_entry(union exfat_entries_t *ent, size_t cluster_ofs);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* recovery_h */

@@ -21,8 +21,6 @@
 //
 
 #include "exfat++.h"
-#include "fstree.hpp"
-#include "fsexcept.hpp"
 
 #include <fstream>
 #include <iomanip>

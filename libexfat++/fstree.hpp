@@ -34,15 +34,12 @@
 #include <optional>
 #include <cstring>
 
-#include "fsexcept.hpp"
+/* The classes below are exported */
+#pragma GCC visibility push(default)
 
 namespace io {
 namespace github {
 namespace paulyc {
-
-/* The classes below are exported */
-/* Don't think we really need this with the namespaces, but reminder to pick one or the other */
-//#pragma GCC visibility push(default)
 
 class ExFATDirectoryTree
 {
@@ -116,12 +113,10 @@ public:
     };
 };
 
-//#pragma GCC visibility pop
-
 }
 }
 }
 
-//#endif /* __cplusplus */
+#pragma GCC visibility pop
 
 #endif /* fstree_hpp */

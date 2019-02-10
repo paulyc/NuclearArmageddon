@@ -23,6 +23,8 @@
 #ifndef fsrestore_h
 #define fsrestore_h
 
+#if 0
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -37,6 +39,8 @@ void free_filesystem(exfat_filesystem_t fs);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #endif /* fsrestore_h */

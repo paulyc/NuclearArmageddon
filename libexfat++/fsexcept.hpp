@@ -23,19 +23,22 @@
 #ifndef fsexcept_hpp
 #define fsexcept_hpp
 
-#include "compiler.h"
-
 #include <exception>
 #include <string>
 #include <cerrno>
 #include <cstring>
 #include <sstream>
 
+/* The classes below are exported */
+#pragma GCC visibility push(default)
+
 class libc_exception : public std::exception
 {
 public:
     libc_exception(int e) : _errno(e) {}
     libc_exception(const char *prefix, int e) : _prefix("[" + std::string(prefix) + "] "), _errno(errno) {}
+    virtual ~libc_exception() {}
+
     virtual const char* what() const noexcept { return (_prefix + strerror(_errno)).c_str(); }
 private:
     std::string _prefix;
@@ -58,5 +61,7 @@ class exfat_exception : public std::exception
 };
 
 #define LIBC_EXCEPTION libc_exception(FILELINE, errno)
+
+#pragma GCC visibility pop
 
 #endif /* fsexcept_hpp */

@@ -27,6 +27,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct { uint16_t __u16; } le16_t;
 typedef struct { uint32_t __u32; } le32_t;
 typedef struct { uint64_t __u64; } le64_t;
@@ -63,6 +67,10 @@ typedef unsigned char bitmap_t;
 
 #else
 #error Wow! You have a PDP machine?!
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif /* ifndef BYTEORDER_H_INCLUDED */

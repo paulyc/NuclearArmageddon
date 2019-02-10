@@ -24,19 +24,15 @@
 #ifndef EXFAT_H_INCLUDED
 #define EXFAT_H_INCLUDED
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef ANDROID
 /* Android.bp is used instead of autotools when targeting Android */
 #include "config.h"
 #endif
+
 #include "compiler.h"
 #include "exfatfs.h"
 #include "bptree.h"
 #include "recovery.h"
-#include "fsrestore.h"
 #include "../fsconfig.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,6 +40,10 @@ extern "C" {
 #include <stdbool.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* The size of off_t type must be 64 bits. File systems larger than 2 GB will
     be corrupted with 32-bit off_t. */
@@ -221,9 +221,6 @@ bool exfat_fix_unknown_entry(struct exfat* ef, struct exfat_node* dir,
 
 #ifdef __cplusplus
 }
-
-#include "fsrestore.hpp"
-
 #endif
 
 #endif /* ifndef EXFAT_H_INCLUDED */

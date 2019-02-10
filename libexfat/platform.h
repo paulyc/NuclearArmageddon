@@ -24,6 +24,10 @@
 #ifndef PLATFORM_H_INCLUDED
 #define PLATFORM_H_INCLUDED
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined(__linux__) || defined(__GLIBC__) || defined(__GNU__)
 
 #include <endian.h>
@@ -58,6 +62,10 @@
 
 #else 
 #error Unknown platform
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif /* ifndef PLATFORM_H_INCLUDED */

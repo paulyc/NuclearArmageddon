@@ -9,7 +9,8 @@
 #ifndef exfat___h
 #define exfat___h
 
-#include "exfat.h"
+#include <exfat.h>
+
 #include "fsexcept.hpp"
 #include "fstree.hpp"
 #include "fsrestore.hpp"

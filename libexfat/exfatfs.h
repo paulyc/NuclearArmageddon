@@ -26,6 +26,10 @@
 #include "byteorder.h"
 #include "compiler.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define EXFAT_NAME_MAX 255
 /* UTF-16 encodes code points up to U+FFFF as single 16-bit code units.
  UTF-8 uses up to 3 bytes (i.e. 8-bit code units) to encode code points
@@ -298,5 +302,9 @@ struct exfat_node_entry
     union exfat_entries_t u_continuations[16]; // up to 18 minus the efi and efn
 }
 PACKED;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* ifndef EXFATFS_H_INCLUDED */

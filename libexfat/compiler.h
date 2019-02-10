@@ -24,6 +24,10 @@
 #ifndef COMPILER_H_INCLUDED
 #define COMPILER_H_INCLUDED
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define X(x) #x
 #define STRINGIFY(x) X(x)
 #define FILELINE __FILE__ ":" STRINGIFY(__LINE__)
@@ -32,9 +36,9 @@
 
 // TODO fix these for C++
 #define STATIC_ASSERT(x)
-#define PACKED
+#define PACKED __attribute__((packed))
 #define PRINTF
-#define NORETURN
+#define NORETURN __attribute__((noreturn))
 
 #else
 
@@ -78,5 +82,9 @@
 #endif
 
 #endif /* __cplusplus */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* ifndef COMPILER_H_INCLUDED */

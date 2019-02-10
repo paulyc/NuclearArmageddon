@@ -21,7 +21,6 @@
 		5F7F9B37220CC1EE007A8482 /* node.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C05B21D5CDEB007A8482 /* node.c */; };
 		5F7F9B38220CC1F2007A8482 /* mount.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04F21D5CDEB007A8482 /* mount.c */; };
 		5F7F9B39220CC1F6007A8482 /* lookup.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04B21D5CDEB007A8482 /* lookup.c */; };
-		5F7F9B3A220CC200007A8482 /* fstree.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5F8B50DF21F92111007A8482 /* fstree.hpp */; };
 		5F7F9B3B220CC202007A8482 /* io.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04E21D5CDEB007A8482 /* io.c */; };
 		5F7F9B3C220CC206007A8482 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F99C04921D5CDEB007A8482 /* log.c */; };
 		5F7F9B3E220CC210007A8482 /* bptree.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F26840721F66D5B007A8482 /* bptree.h */; };
@@ -29,15 +28,11 @@
 		5F7F9B40220CC216007A8482 /* compiler.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F99C04C21D5CDEB007A8482 /* compiler.h */; };
 		5F7F9B41220CC21A007A8482 /* exfat.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F99C05221D5CDEB007A8482 /* exfat.h */; };
 		5F7F9B42220CC21C007A8482 /* exfatfs.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F99C04A21D5CDEB007A8482 /* exfatfs.h */; };
-		5F7F9B43220CC21E007A8482 /* fsrestore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F8B50E221F92817007A8482 /* fsrestore.cpp */; };
 		5F7F9B44220CC221007A8482 /* fsrestore.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F8B50E321F92817007A8482 /* fsrestore.h */; };
-		5F7F9B45220CC224007A8482 /* fstree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5F8B50DE21F92111007A8482 /* fstree.cpp */; };
 		5F7F9B47220CC28B007A8482 /* libexfat.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7F9B23220CC18E007A8482 /* libexfat.dylib */; };
 		5F7F9B48220CC290007A8482 /* libexfat.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7F9B23220CC18E007A8482 /* libexfat.dylib */; };
-		5F953AD4220CDE8D007A8482 /* fsrestore.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5F953AD3220CDE8D007A8482 /* fsrestore.hpp */; };
 		5F953AD7220CE06C007A8482 /* fsconfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 5F953AD6220CE06B007A8482 /* fsconfig.h */; };
-		5FBA7527220F2489007A8482 /* exfat++.h in Headers */ = {isa = PBXBuildFile; fileRef = 5FBA7526220F2489007A8482 /* exfat++.h */; };
-		5FBA7529220F2509007A8482 /* fsexcept.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 5FBA7528220F2509007A8482 /* fsexcept.hpp */; };
+		5FEF7093221080B4007A8482 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = 5FEF7092221080B4007A8482 /* config.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -71,11 +66,7 @@
 		5F40C11F21E78F1000E6F309 /* denukify */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = denukify; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F6C031B21DDC638009F3609 /* nuked */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = nuked; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F7F9B23220CC18E007A8482 /* libexfat.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libexfat.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		5F8B50DE21F92111007A8482 /* fstree.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = fstree.cpp; sourceTree = "<group>"; };
-		5F8B50DF21F92111007A8482 /* fstree.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = fstree.hpp; sourceTree = "<group>"; };
-		5F8B50E221F92817007A8482 /* fsrestore.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = fsrestore.cpp; sourceTree = "<group>"; };
 		5F8B50E321F92817007A8482 /* fsrestore.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; path = fsrestore.h; sourceTree = "<group>"; };
-		5F953AD3220CDE8D007A8482 /* fsrestore.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = fsrestore.hpp; sourceTree = "<group>"; };
 		5F953AD6220CE06B007A8482 /* fsconfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fsconfig.h; sourceTree = "<group>"; };
 		5F99C03D21D5CDEB007A8482 /* dumpexfat.8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dumpexfat.8; sourceTree = "<group>"; };
 		5F99C03E21D5CDEB007A8482 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
@@ -135,8 +126,14 @@
 		5FAF0C5821E729EC00C28BB7 /* denukify.8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = denukify.8; sourceTree = "<group>"; };
 		5FAF0C5921E729EC00C28BB7 /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
 		5FAF0C5A21E729EC00C28BB7 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		5FBA7526220F2489007A8482 /* exfat++.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "exfat++.h"; sourceTree = "<group>"; };
-		5FBA7528220F2509007A8482 /* fsexcept.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = fsexcept.hpp; sourceTree = "<group>"; };
+		5FEF7091221080B4007A8482 /* config.h.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.h.in; sourceTree = "<group>"; };
+		5FEF7092221080B4007A8482 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		5FEF709622108446007A8482 /* fsrestore.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = fsrestore.cpp; sourceTree = "<group>"; };
+		5FEF709722108446007A8482 /* fsexcept.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = fsexcept.hpp; sourceTree = "<group>"; };
+		5FEF709822108446007A8482 /* fstree.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = fstree.hpp; sourceTree = "<group>"; };
+		5FEF709922108446007A8482 /* exfat++.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "exfat++.h"; sourceTree = "<group>"; };
+		5FEF709A22108446007A8482 /* fsrestore.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = fsrestore.hpp; sourceTree = "<group>"; };
+		5FEF709B22108446007A8482 /* fstree.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = fstree.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,6 +166,7 @@
 		5F2E2EEB21D5CB1C007A8482 = {
 			isa = PBXGroup;
 			children = (
+				5FEF709522108446007A8482 /* libexfat++ */,
 				5F99C08121D5CE3F007A8482 /* Android.bp */,
 				5F99C08221D5CE3F007A8482 /* ChangeLog */,
 				5F99C08421D5CE3F007A8482 /* CMakeLists.txt */,
@@ -234,16 +232,12 @@
 				5F26840721F66D5B007A8482 /* bptree.h */,
 				5F99C04D21D5CDEB007A8482 /* byteorder.h */,
 				5F99C05521D5CDEB007A8482 /* cluster.c */,
+				5FEF7092221080B4007A8482 /* config.h */,
+				5FEF7091221080B4007A8482 /* config.h.in */,
 				5F99C04C21D5CDEB007A8482 /* compiler.h */,
 				5F99C05221D5CDEB007A8482 /* exfat.h */,
-				5FBA7526220F2489007A8482 /* exfat++.h */,
 				5F99C04A21D5CDEB007A8482 /* exfatfs.h */,
-				5FBA7528220F2509007A8482 /* fsexcept.hpp */,
-				5F8B50E221F92817007A8482 /* fsrestore.cpp */,
-				5F953AD3220CDE8D007A8482 /* fsrestore.hpp */,
 				5F8B50E321F92817007A8482 /* fsrestore.h */,
-				5F8B50DE21F92111007A8482 /* fstree.cpp */,
-				5F8B50DF21F92111007A8482 /* fstree.hpp */,
 				5F99C04E21D5CDEB007A8482 /* io.c */,
 				5F99C04921D5CDEB007A8482 /* log.c */,
 				5F99C04B21D5CDEB007A8482 /* lookup.c */,
@@ -327,6 +321,19 @@
 			path = denukify;
 			sourceTree = "<group>";
 		};
+		5FEF709522108446007A8482 /* libexfat++ */ = {
+			isa = PBXGroup;
+			children = (
+				5FEF709922108446007A8482 /* exfat++.h */,
+				5FEF709722108446007A8482 /* fsexcept.hpp */,
+				5FEF709622108446007A8482 /* fsrestore.cpp */,
+				5FEF709A22108446007A8482 /* fsrestore.hpp */,
+				5FEF709B22108446007A8482 /* fstree.cpp */,
+				5FEF709822108446007A8482 /* fstree.hpp */,
+			);
+			path = "libexfat++";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -334,19 +341,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F953AD4220CDE8D007A8482 /* fsrestore.hpp in Headers */,
-				5FBA7527220F2489007A8482 /* exfat++.h in Headers */,
-				5FBA7529220F2509007A8482 /* fsexcept.hpp in Headers */,
 				5F7F9B42220CC21C007A8482 /* exfatfs.h in Headers */,
 				5F7F9B3F220CC212007A8482 /* byteorder.h in Headers */,
 				5F7F9B44220CC221007A8482 /* fsrestore.h in Headers */,
+				5FEF7093221080B4007A8482 /* config.h in Headers */,
 				5F7F9B3E220CC210007A8482 /* bptree.h in Headers */,
 				5F7F9B41220CC21A007A8482 /* exfat.h in Headers */,
 				5F7F9B40220CC216007A8482 /* compiler.h in Headers */,
 				5F7F9B36220CC1EA007A8482 /* platform.h in Headers */,
 				5F953AD7220CE06C007A8482 /* fsconfig.h in Headers */,
 				5F7F9B34220CC1E2007A8482 /* recovery.h in Headers */,
-				5F7F9B3A220CC200007A8482 /* fstree.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -485,9 +489,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5F7F9B2F220CC1BB007A8482 /* cluster.c in Sources */,
-				5F7F9B43220CC21E007A8482 /* fsrestore.cpp in Sources */,
 				5F7F9B3B220CC202007A8482 /* io.c in Sources */,
-				5F7F9B45220CC224007A8482 /* fstree.cpp in Sources */,
 				5F7F9B33220CC1DF007A8482 /* repair.c in Sources */,
 				5F7F9B35220CC1E5007A8482 /* recovery.c in Sources */,
 				5F7F9B3C220CC206007A8482 /* log.c in Sources */,
